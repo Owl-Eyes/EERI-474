@@ -1,0 +1,35 @@
+%#######################################################################
+%#                                                                     #
+%#                       EERI 474 - Main Project Code                  #
+%#                         by J. Koekemoer 26035170                    #
+%#                                                                     #
+%#######################################################################
+
+% The main code for the Path/Elevation Profile Extraction project,
+% which calls the various sub-functions and provides the profile data
+% IN: All user inputs
+% OUT: All program outputs
+
+
+%% Vars
+
+tile_name = 's15_e013_1arc_v3.tif'; % Lubango, Huila
+
+% plon = [13 13.25 13.5 13.75 14]; % Across
+% plat = [-15 -14.75 -14.5 -14.25 -14];
+
+plat = [-14.91 -14.92 -14.93]; % Town
+plon = [13.5 13.49 13.48];
+
+interpMethod
+
+
+%% 'Main'
+
+% Get profile data
+[distData, elevData] = PEPE(tile_name,plat,plon,numSamples,interpMethod,approxMethod,fileType);
+% Plot results in a figure
+plotProfile(distData, elevData);
+
+
+%% Misc
