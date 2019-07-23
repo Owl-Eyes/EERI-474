@@ -11,7 +11,7 @@
 % IN: All user inputs (indirectly)
 % OUT: All program outputs (indirectly)
 
-function [r_dist, z_elev] = PEPE(filePath, plat, plon, numSamples, interpMethod, approxMethod, fileType)
+function [r_dist, z_elev] = PEPE(filePath, plat, plon, stepSize, interpMethod, approxMethod, fileType)
 
 
 %% Variable Declarations
@@ -29,6 +29,8 @@ z_elev = [];            % the array of profile elevation values
 r_dist = [];            % the array of profile distance values
 lat = [];               % the profile latitude values
 lon = [];               % the profile longitude values
+
+pointSet = [];          % the matrix containing points as lat/lon pairs
 
 
 %% Main Program Begins
@@ -52,7 +54,13 @@ plotDEM(tile_data, ref_mat);
 % Obtain bounded coordinates
 %[plat, plon] = getCoordinates(lat_range, long_range);
 
+pointSet = [plat(1,:).', plon(1,:).'];
+
 % Actual profile extraction
+
+%[z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,stepSize,approxMethod,interpMethod);
+
+% Temporary function:
 [z_elev,r_dist,lat,lon] = mapprofile(tile_data,ref_mat,plat,plon,'km',approxMethod,interpMethod);
 
 
