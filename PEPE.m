@@ -49,7 +49,7 @@ pointSet = [];          % the matrix containing points as lat/lon pairs
 plotDEM(tile_data, ref_mat);
 
 % Print DEM information
-[lat_range, long_range] = dispDEMInfo(min_elev,max_elev,ref_mat)
+[lat_range, long_range] = dispDEMInfo(min_elev,max_elev,ref_mat);
 
 % Obtain bounded coordinates
 %[plat, plon] = getCoordinates(lat_range, long_range);
@@ -58,20 +58,17 @@ pointSet = [plat(1,:).', plon(1,:).'];
 
 % Actual profile extraction
 
-%[z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,stepSize,approxMethod,interpMethod);
+%[z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
 
 % Temporary function:
 [z_elev,r_dist,lat,lon] = mapprofile(tile_data,ref_mat,plat,plon,'km',approxMethod,interpMethod);
 
-
-% Plot path/elevation profile
-plotProfile(r_dist,z_elev);
-
-
-
-
-
-
+%% Temp Tests
+% 
+% [begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet)
+% 
+% % Plot path/elevation profile
+% plotProfile(r_dist,z_elev);
 
 
 
