@@ -8,7 +8,7 @@
 % The function used to display the DEM's latitude and longitude limits for
 % the user, as well as various DEM statistics.
 % IN: minimum and maximum elevations, reference matrix
-% OUT: Lat and Long limits (simply updates a label in the GUI)
+% OUT: Lat and Long limits (simply displays)
 
 function [LatLims, LongLims] = dispDEMInfo(minElev, maxElev, refMatrix)
 
