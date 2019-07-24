@@ -9,7 +9,7 @@
 % IN: all key information
 % OUT: path profile plot distance and elevation values
 
-function [z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,stepSize,approxMethod,interpMethod)
+function [z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,latRange,longRange,stepSize,approxMethod,interpMethod)
 
 %% Temp Vars
 pointSet = [  -14.9100   13.5000
@@ -29,6 +29,7 @@ if approxMethod == 'flat'
     }
 elseif approxMethod == 'haversine'
     {
+        [begindex, endex] = ltln2ind(map,ref,pointSet)
         disp('Haversine Geographical Approximation Method');
         
         [arclen, azimuth] = distance(pointSet(1,:), pointSet(2,:));
