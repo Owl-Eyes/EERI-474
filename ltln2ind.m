@@ -21,7 +21,7 @@ function [begindex,endex] = ltln2ind(map,mapref,pointSet)
 begindex = [brow,bcol];
 
 % Indices of ending lat/lon
-[erow,ecol] = setpostn(map,mapref,pointSet(2,1),pointSet(2,2));
+[erow,ecol] = setpostn(map,mapref,pointSet(1,3),pointSet(1,4));
 endex = [erow,ecol];
 
 end
