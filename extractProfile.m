@@ -12,9 +12,14 @@
 function [z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,latRange,longRange,stepSize,approxMethod,interpMethod)
 
 %% Temp Vars
-pointSet = [  -14.9100   13.5000
-             -14.9300   13.4800];
+% pointSet = [  -14.9100   13.5000
+%              -14.9300   13.4800];
 
+% points      /```START```\/````END````\
+% pointSet = [-14.91 13.5 -14.93 13.48]; % Town
+
+plats = [pointSet(1,:) pointSet(3,:)];
+plons = [pointSet(2,:) pointSet(4,:)];
 
 %% Code Begins
 
@@ -29,10 +34,9 @@ if approxMethod == 'flat'
     }
 elseif approxMethod == 'haversine'
     {
-        [begindex, endex] = ltln2ind(map,ref,pointSet)
         disp('Haversine Geographical Approximation Method');
         
-        [arclen, azimuth] = distance(pointSet(1,:), pointSet(2,:));
+        [arclen, azimuth] = distance(plats(1,:), plons(1,:));
     }
 elseif approxMethod == 'vincenty'
     {
@@ -49,5 +53,9 @@ end
 
 %% Get Start/End Data "Cells"
 
+[begindex, endex] = ltln2ind(map,ref,pointSet);
+
 %% Get Elevations
+
+
 
