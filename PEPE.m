@@ -11,7 +11,7 @@
 % IN: All user inputs (indirectly)
 % OUT: All program outputs (indirectly)
 
-function [r_dist, z_elev] = PEPE(filePath, plat, plon, stepSize, interpMethod, approxMethod, fileType)
+function [r_dist, z_elev] = PEPE(filePath, pointSet, stepSize, interpMethod, approxMethod, fileType)
 
 
 %% Variable Declarations
@@ -30,46 +30,51 @@ r_dist = [];            % the array of profile distance values
 lat = [];               % the profile latitude values
 lon = [];               % the profile longitude values
 
-pointSet = [];          % the matrix containing points as lat/lon pairs
+%pointSet = [];          % the matrix containing points as lat/lon pairs
 
 
 %% Main Program Begins
 
-% Get file/path names
+%% Get file/path names
 % [tile_name, file_path] = getTileName();
 % file_location = strcat(file_path,tile_name);
 
-% Get tile info and data
+%% Get tile info and data
 [tile_data, tile_info, ref_mat] = getTileStuff(filePath);
 
-% Get tile stats
+%% Get tile stats
 [min_elev, max_elev] = getTileStats(tile_data);
 
-% Plot tile in figure
+%% Plot tile in figure
 plotDEM(tile_data, ref_mat);
 
-% Print DEM information
+%% Print DEM information
 [lat_range, long_range] = dispDEMInfo(min_elev,max_elev,ref_mat);
 
 % Obtain bounded coordinates
 %[plat, plon] = getCoordinates(lat_range, long_range);
 
-pointSet = [plat(1,:).', plon(1,:).'];
+% points      /```START```\/````END````\
+% pointSet = [-14.91 13.5 -14.93 13.48]; % Town
 
-% Actual profile extraction
+plat = [pointSet(1,1) pointSet(1,3)];
+plon = [pointSet(1,2) pointSet(1,4)];
+
+%% Actual profile extraction
 
 %[z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
 
 % Temporary function:
 [z_elev,r_dist,lat,lon] = mapprofile(tile_data,ref_mat,plat,plon,'km',approxMethod,interpMethod);
 
+
+%% Plot path/elevation profile
+plotProfile(r_dist,z_elev);
+
+
 %% Temp Tests
 % 
 % [begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet)
 % 
-% % Plot path/elevation profile
-% plotProfile(r_dist,z_elev);
-
-
 
 end
