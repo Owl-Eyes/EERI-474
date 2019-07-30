@@ -62,7 +62,7 @@ plon = [pointSet(1,2) pointSet(1,4)];
 
 %% Actual profile extraction
 
-%[z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
+[z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
 
 % Temporary function:
 [z_elev,r_dist,lat,lon] = mapprofile(tile_data,ref_mat,plat,plon,'km',approxMethod,interpMethod);
