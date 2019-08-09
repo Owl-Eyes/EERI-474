@@ -17,13 +17,13 @@
 
 filePath = 's15_e013_1arc_v3.tif'; % Lubango, Huila
 
-stepSize = 1000; % Distance between samples
+stepSize = 100; % Distance between samples in m
 
-interpMethod = 'bilinear';
+interpMethod = 'linear';
 
 % approxMethod = 'haversine'; % Great circle
-% approxMethod = 'Vincenty'; % ellipsoidal
- approxMethod = 'Flat'; % Flat Earth
+ approxMethod = 'Vincenty'; % ellipsoidal
+% approxMethod = 'Flat'; % Flat Earth
 
 fileType = 'tif';
 
@@ -36,14 +36,17 @@ plons = [pointSet(1,2) pointSet(1,4)];
 
 R = earthRadius('meters');
 
+nlegs = 0;
+
 numPairs = length(pointSet(:,1))
 
 currentBeginPair = [];
 currentEndPair = [];
 
+
 %% Code Begins
 % Get tile info and data
-[tile_data, tile_info, ref_mat] = getTileStuff(filePath);
+[tile_data, tile_info, ref_mat, ref_mat_g] = getTileStuff(filePath);
 
 
 
@@ -54,8 +57,8 @@ approxMethod = lower(approxMethod); %Text to lowercase for some error prevention
 
 for i = 1:numPairs
     
-        currentBeginPair = [pointSet(i,1), pointSet(i,2)]
-        currentEndPair = [pointSet(i,3), pointSet(i,4)]
+        currentBeginPair = [pointSet(i,1), pointSet(i,2)];
+        currentEndPair = [pointSet(i,3), pointSet(i,4)];
 
         if (strcmp(approxMethod,'flat') == 1)
             
@@ -71,14 +74,14 @@ for i = 1:numPairs
                 
                 x = (lam2 - lam1) * cos((phi1+phi2)/2);  % Change in x
                 y = (phi2 - phi1);                       % Change in y
-                arclen = sqrt((x)^2 + (y)^2) * R        % Distance
+                ms = deg2km(sqrt((x)^2 + (y)^2) * R) * 1000 ;  % Distance
             
         elseif (strcmp(approxMethod,'haversine') == 1)
             
                 disp('Haversine Geographical Approximation Method');
 
                 [arclen, azimuth] = distance(currentBeginPair, currentEndPair)
-                kms = deg2km(arclen)    % to kilometers
+                ms = deg2km(arclen) * 1000;   % to meters
                 
         elseif (strcmp(approxMethod,'vincenty') == 1)
             
@@ -86,7 +89,7 @@ for i = 1:numPairs
                 
                 e = referenceEllipsoid(tile_info.Ellipsoid);
                 [arclen, azimuth] = distance(currentBeginPair, currentEndPair, e)
-                kms = deg2km(arclen)    % to kilometers
+                ms = arclen;   % already meters
             
         else
             
@@ -94,15 +97,66 @@ for i = 1:numPairs
             
         end
         
+        % FINAL DISTANCE ARRAY
+        
+        % Determine number of "legs" between points along path
+        nlegs = round(ms/stepSize); %improve round into fraction?
+        
+        % Declare distance array
+        r_dist = zeros(nlegs+1,1);
+        
+        % Populate distance array
+        tempdist = 0;
+        
+        for j = 1:nlegs+1
+            
+            r_dist(j,1) = tempdist;
+            tempdist = tempdist + stepSize;
+            
+        end
           
 end
 
 
 %% Get Start/End Data "Cells"
 
-[begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet);
+[begindex, endex] = ltln2ind(tile_data,ref_mat_g,pointSet);
 
 %% Get Elevations
 
+% Declare elevation array
+z_elev = zeros(nlegs+1,1);
+
+% Get elevation acc. to type
+if (strcmp(approxMethod,'flat') == 1)
+            
+    disp('Flat Earth Geographical Elevation Method Not Yet Supported\n'); % Flat Elevation
+          
+    %z_elev(inGrid) = geointerp(tile_data, ref_mat, plats(inGrid), plons(inGrid), interpMethod);
+
+
+    elseif (strcmp(approxMethod,'haversine') == 1)  % Great Circle Elevation
+
+            disp('Haversine Geographical Elevation Method');
+            
+            pts = gcwaypts(currentBeginPair(1,1),currentBeginPair(1,2), ...
+                  currentEndPair(1,1),currentEndPair(1,2),nlegs);
+              
+            z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod);  
+
+    elseif (strcmp(approxMethod,'vincenty') == 1) % Ellipsoidal Elevation
+
+            disp('Vincenty Geographical Approximation Method');
+
+            pts = track2(currentBeginPair(1,1),currentBeginPair(1,2), ...
+                  currentEndPair(1,1),currentEndPair(1,2),e,'degrees',nlegs+1);
+            
+            z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod);  
+
+    else
+
+            disp('Invalid Elevation Extraction Method');
+
+end
 
 
