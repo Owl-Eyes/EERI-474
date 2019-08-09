@@ -10,7 +10,7 @@
 % IN: the file path and name together
 % OUT: the dem data, metadata, and reference matrix
 
-function [tileData, tileInfo, refMat] = getTileStuff(tileName)
+function [tileData, tileInfo, refMat, refMatg] = getTileStuff(tileName)
 
 %tileName = '9129CATD.ddf';
 
@@ -25,10 +25,10 @@ if (strcmp(tileExtension,'tif') || strcmp(tileExtension,'tiff')) %GeoTiff files
     tileInfo = geotiffinfo(tileName);           % get tile metadata
     tileData = double(tileData);                % Convert data to doubles
     % Geographical objects
-    refMat = georefcells(refMat.LatitudeLimits,refMat.LongitudeLimits,refMat.RasterSize);
+    refMatg = georefcells(refMat.LatitudeLimits,refMat.LongitudeLimits,refMat.RasterSize);
 
 elseif strcmp(tileExtension,'ddf') % SDTS files
-    [tileData, refMat] = sdtsdemread(tileName); % get tile data and reference matix
+    [tileData, refMatg] = sdtsdemread(tileName); % get tile data and reference matix
     tileInfo = sdtsinfo(tileName);              % get tile metadata
     tileData = double(tileData);                % Convert data to doubles
     
