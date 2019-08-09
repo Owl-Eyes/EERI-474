@@ -40,16 +40,16 @@ lon = [];               % the profile longitude values
 % file_location = strcat(file_path,tile_name);
 
 %% Get tile info and data
-[tile_data, tile_info, ref_mat] = getTileStuff(filePath);
+[tile_data, tile_info, ref_mat, ref_mat_g] = getTileStuff(filePath);
 
 %% Get tile stats
 [min_elev, max_elev] = getTileStats(tile_data);
 
 %% Plot tile in figure
-plotDEM(tile_data, ref_mat);
+plotDEM(tile_data, ref_mat_g);
 
 %% Print DEM information
-[lat_range, long_range] = dispDEMInfo(min_elev,max_elev,ref_mat);
+[lat_range, long_range] = dispDEMInfo(min_elev,max_elev,ref_mat_g);
 
 % Obtain bounded coordinates
 %[plat, plon] = getCoordinates(lat_range, long_range);
@@ -57,15 +57,15 @@ plotDEM(tile_data, ref_mat);
 % points      /```START```\/````END````\
 % pointSet = [-14.91 13.5 -14.93 13.48]; % Town
 
-plat = [pointSet(1,1) pointSet(1,3)];
-plon = [pointSet(1,2) pointSet(1,4)];
+plat = [pointSet(:,1) pointSet(:,3)];
+plon = [pointSet(:,2) pointSet(:,4)];
 
 %% Actual profile extraction
 
-[z_elev,r_dist] = extractProfile(tile_data,ref_mat,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
+[z_elev,r_dist] = extractProfile(tile_data,tile_info,ref_mat_g,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
 
 % Temporary function:
-[z_elev,r_dist,lat,lon] = mapprofile(tile_data,ref_mat,plat,plon,'km',approxMethod,interpMethod);
+%[z_elev,r_dist,lat,lon] = mapprofile(tile_data,ref_mat,plat,plon,'km',approxMethod,interpMethod);
 
 
 %% Plot path/elevation profile
