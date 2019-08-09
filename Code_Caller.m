@@ -21,17 +21,18 @@ tile_name = 's15_e013_1arc_v3.tif'; % Lubango, Huila
 % points   /```START```\/````END````\
 pointSet = [-14.91 13.5 -14.93 13.48]; % Town
 
-stepSize = 1000; % Distance between samples
+stepSize = 100; % Distance between samples (in meters)
 
-interpMethod = 'bilinear';
-approxMethod = 'gc'; % Great circle
+interpMethod = 'linear';
+approxMethod = 'haversine'; % Great circle
 fileType = 'tif';
 
 
 %% 'Main'
 
 % Get profile data
-[distData, elevData] = PEPE(tile_name,pointSet,stepSize,interpMethod,approxMethod,fileType);
+[distData, elevData] = ...
+ PEPE(tile_name,pointSet,stepSize,interpMethod,approxMethod,fileType);
 % Plot results in a figure (optional)
 %plotProfile(distData, elevData);
 
