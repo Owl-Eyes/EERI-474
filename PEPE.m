@@ -11,7 +11,29 @@
 % IN: All user inputs (indirectly)
 % OUT: All program outputs (indirectly)
 
+% INPUT INFO AND FORMATS:
+% filePath - file path of data
+%            Drive:\...\...\file.extension
+% pointSet - matrix of begin/end pairs in lat and long
+%            [start1_lat start1_lon end1_lat end1_lon
+%             ...
+%             startn_lat startn_lon endn_lat endn_lon]
+% stepSize - distance between samples in meters
+%            int or double
+% interpMethod - interpolation method for calculating the line between
+%                points
+%                'Nearest','Linear', or 'Cubic', case-insensitive
+% approxMethod - geograhic approximation method for modelling the planet
+%               'Flat','Haversine', or 'Vincenty', case-insensitive
+% fileType - the file extension of the data
+%            'tif','tiff', or 'ddf'
+
 function [r_dist, z_elev] = PEPE(filePath, pointSet, stepSize, interpMethod, approxMethod, fileType)
+tStart = tic;
+%% Start-up Performance Improvement
+
+
+
 
 
 %% Variable Declarations
@@ -40,16 +62,24 @@ lon = [];               % the profile longitude values
 % file_location = strcat(file_path,tile_name);
 
 %% Get tile info and data
+tic;
 [tile_data, tile_info, ref_mat, ref_mat_g] = getTileStuff(filePath);
+TileStuffT = toc
 
 %% Get tile stats
+tic;
 [min_elev, max_elev] = getTileStats(tile_data);
+TileStatsT = toc
 
 %% Plot tile in figure
+tic
 plotDEM(tile_data, ref_mat_g);
+plotDEMT = toc
 
 %% Print DEM information
+tic;
 [lat_range, long_range] = dispDEMInfo(min_elev,max_elev,ref_mat_g);
+DEMInfoT = toc
 
 % Obtain bounded coordinates
 %[plat, plon] = getCoordinates(lat_range, long_range);
@@ -61,20 +91,21 @@ plat = [pointSet(:,1) pointSet(:,3)];
 plon = [pointSet(:,2) pointSet(:,4)];
 
 %% Actual profile extraction
-
+tic
 [z_elev,r_dist] = extractProfile(tile_data,tile_info,ref_mat_g,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
-
+ProfileT = toc
 % Temporary function:
 %[z_elev,r_dist,lat,lon] = mapprofile(tile_data,ref_mat,plat,plon,'km',approxMethod,interpMethod);
 
 
 %% Plot path/elevation profile
+tic;
 plotProfile(r_dist,z_elev);
-
+PlotProfileT = toc
 
 %% Temp Tests
 % 
 % [begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet)
 % 
-
+TotalDuration = toc(tStart)
 end
