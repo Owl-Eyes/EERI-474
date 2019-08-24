@@ -34,6 +34,7 @@ numPairs = length(pointSet(:,1));
 currentBeginPair = [];
 currentEndPair = [];
 
+UTM = utmzone(latRange,longRange);
 
 %% Code Begins
 % Get tile info and data
@@ -51,23 +52,8 @@ for i = 1:numPairs
         currentBeginPair = [pointSet(i,1), pointSet(i,2)];
         currentEndPair = [pointSet(i,3), pointSet(i,4)];
 
-        if (strcmp(approxMethod,'flat') == 1)
-            
-                disp('Flat Earth Geographical Approximation Method \n');
-               
-                % Latitude degrees to radians
-                phi1 = deg2rad(pointSet(i,1)); 
-                phi2 = deg2rad(pointSet(i,3));
-                
-                % Longitudes
-                lam1 = pointSet(i,2);
-                lam2 = pointSet(i,4);
-                
-                x = (lam2 - lam1) * cos((phi1+phi2)/2);  % Change in x
-                y = (phi2 - phi1);                       % Change in y
-                ms = deg2km(sqrt((x)^2 + (y)^2) * R) * 1000 ;  % Distance
-            
-        elseif (strcmp(approxMethod,'haversine') == 1)
+        
+        if (strcmp(approxMethod,'haversine') == 1)
             
                 disp('Haversine Geographical Approximation Method');
 
@@ -82,6 +68,27 @@ for i = 1:numPairs
                 [arclen, azimuth] = distance(currentBeginPair, currentEndPair, e)
                 ms = arclen;   % already meters
             
+        elseif (strcmp(approxMethod,'flat') == 1)
+            
+                disp('Flat Earth Geographical Approximation Method \n');
+               
+                %projax = axesm('MapProjection','mercator','MapLatLimit',...
+                %               lat_range,'MapLonLimit',long_range);
+                
+                
+                
+                % Latitude degrees to radians
+                phi1 = deg2rad(pointSet(i,1)); 
+                phi2 = deg2rad(pointSet(i,3));
+                
+                % Longitudes
+                lam1 = pointSet(i,2);
+                lam2 = pointSet(i,4);
+                
+                x = (lam2 - lam1) * cos((phi1+phi2)/2);  % Change in x
+                y = (phi2 - phi1);                       % Change in y
+                ms = deg2km(sqrt((x)^2 + (y)^2) * R) * 1000 ;  % Distance
+                    
         else
             
                 disp('Invalid Geographical Approximation Method');
