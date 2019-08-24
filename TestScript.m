@@ -22,8 +22,8 @@ stepSize = 100; % Distance between samples in m
 interpMethod = 'linear';
 
 % approxMethod = 'haversine'; % Great circle
- approxMethod = 'Vincenty'; % ellipsoidal
-% approxMethod = 'Flat'; % Flat Earth
+% approxMethod = 'Vincenty'; % ellipsoidal
+ approxMethod = 'Flat'; % Flat Earth
 
 fileType = 'tif';
 
@@ -38,18 +38,21 @@ R = earthRadius('meters');
 
 nlegs = 0;
 
-numPairs = length(pointSet(:,1))
+numPairs = length(pointSet(:,1));
 
 currentBeginPair = [];
 currentEndPair = [];
-
 
 %% Code Begins
 % Get tile info and data
 [tile_data, tile_info, ref_mat, ref_mat_g] = getTileStuff(filePath);
 
+lat_range = [ref_mat.LatitudeLimits(1,1),ref_mat.LatitudeLimits(1,2)];
+long_range = [ref_mat.LongitudeLimits(1,1),ref_mat.LongitudeLimits(1,2)];
 
-
+UTM = utmzone(lat_range,long_range);
+[ellip,ellipName] = utmgeoid(UTM);
+eCalc = referenceEllipsoid(ellipName);
 
 %% Check Geo. Approx. Method & Get Distance
 
@@ -62,8 +65,17 @@ for i = 1:numPairs
 
         if (strcmp(approxMethod,'flat') == 1)
             
-                disp('Flat Earth Geographical Approximation Method \n');
+                disp('Flat Earth Geographical Approximation Method');
                
+                % Projected axes...
+                projax = axesm('MapProjection','mercator','MapLatLimit',...
+                               lat_range,'MapLonLimit',long_range);
+                
+                [proj_tile,proj_ref] = vec2mtx(plats,plons,tile_data,ref_mat_g);            
+                           
+                geoshow(projax,proj_tile,proj_ref,'DisplayType','texturemap');  % the DEM texturemap
+                % Projected data???
+                
                 % Latitude degrees to radians
                 phi1 = deg2rad(pointSet(i,1)); 
                 phi2 = deg2rad(pointSet(i,3));
@@ -130,7 +142,7 @@ z_elev = zeros(nlegs+1,1);
 % Get elevation acc. to type
 if (strcmp(approxMethod,'flat') == 1)
             
-    disp('Flat Earth Geographical Elevation Method Not Yet Supported\n'); % Flat Elevation
+    disp('Flat Earth Geographical Elevation Method Not Yet Supported'); % Flat Elevation
           
     %z_elev(inGrid) = geointerp(tile_data, ref_mat, plats(inGrid), plons(inGrid), interpMethod);
 
