@@ -15,10 +15,15 @@ function [] = plotDEM(tile, refMat)
 figure  % New figure
 
 worldAxes = worldmap(tile,refMat);  % Lat/long axes
+
 geoshow(tile,refMat,'DisplayType','texturemap');  % the DEM texturemap
-daspect([ 1 1 1 ]);
+
+%daspect([ 1 1 1 ]);
+
 demcmap(tile);
 
-axis off
+%plotDEMStart = tic;
+%axis off
+%plotDEMT_Find = toc(plotDEMStart)
 
 end
