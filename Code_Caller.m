@@ -23,18 +23,23 @@ pointSet = [-14.91 13.5 -14.93 13.48]; % Town
 
 stepSize = 100; % Distance between samples (in meters)
 
-interpMethod = 'linear';
-approxMethod = 'haversine'; % Great circle
+interpMethod = 'Cubic';
+approxMethod = 'Vincenty'; % Great circle
 fileType = 'tif';
 
 
 %% 'Main'
+
+%tic;  % Start total timer
 
 % Get profile data
 [distData, elevData] = ...
  PEPE(tile_name,pointSet,stepSize,interpMethod,approxMethod,fileType);
 % Plot results in a figure (optional)
 %plotProfile(distData, elevData);
+
+%toc;    % End total timer
+%TotalDuration = toc
 
 
 %% Misc
