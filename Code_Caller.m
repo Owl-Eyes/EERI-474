@@ -13,7 +13,8 @@
 
 %% Vars
 
-tile_name = 's15_e013_1arc_v3.tif'; % Lubango, Huila
+%tile_name = 's15_e013_1arc_v3.tif'; % Lubango, Huila
+tile_name = 'W020S10.dem'; % Western SA + Namibia + S. Angola
 
 % plon = [13 13.25 13.5 13.75 14]; % Across
 % plat = [-15 -14.75 -14.5 -14.25 -14];
@@ -25,7 +26,7 @@ stepSize = 100; % Distance between samples (in meters)
 
 interpMethod = 'Cubic';
 approxMethod = 'Vincenty'; % Great circle
-fileType = 'tif';
+fileType = 'tif';   % Currently unused
 
 
 %% 'Main'
