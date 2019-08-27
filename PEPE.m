@@ -25,7 +25,7 @@
 %                'Nearest','Linear', or 'Cubic', case-insensitive
 % approxMethod - geograhic approximation method for modelling the planet
 %               'Flat','Haversine', or 'Vincenty', case-insensitive
-% fileType - the file extension of the data
+% fileType - the file extension of the data   ( CURRENTLY UNUSED )
 %            'tif','tiff', or 'ddf'
 
 function [r_dist, z_elev] = PEPE(filePath, pointSet, stepSize, interpMethod, approxMethod, fileType)
@@ -39,8 +39,9 @@ tStart = tic;
 %% Variable Declarations
 
 tile_data = [];         % the 2D array of DEM data
-tile_info = [];         % DEM file metadata
-ref_mat = [];           % DEM reference matrix
+ellip = [];             % DEM file reference ellipsoid
+ref_matp = [];          % DEM reference matrix (geo postings)
+ref_mat = [];           % DEM reference matrix (geo cells)
 min_elev = 0;           % minimum elevation in DEM file
 max_elev = 0;           % maximum elevation in DEM file
 
@@ -63,7 +64,7 @@ lon = [];               % the profile longitude values
 
 %% Get tile info and data
 tic;
-[tile_data, tile_info, ref_mat, ref_mat_g] = getTileStuff(filePath);
+[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath);
 TileStuffT = toc
 
 %% Get tile stats
@@ -73,13 +74,13 @@ TileStatsT = toc
 
 %% Plot tile in figure
 tic
-plotDEM(tile_data, ref_mat_g);
+plotDEM(tile_data, ref_mat);
 plotDEMT = toc
 
-%% Print DEM information
-tic;
-[lat_range, long_range] = dispDEMInfo(min_elev,max_elev,ref_mat_g);
-DEMInfoT = toc
+ %% Find DEM information
+% tic;
+% [lat_range, long_range] = dispDEMInfo(ref_mat);
+% DEMInfoT = toc
 
 % Obtain bounded coordinates
 %[plat, plon] = getCoordinates(lat_range, long_range);
@@ -92,7 +93,7 @@ plon = [pointSet(:,2) pointSet(:,4)];
 
 %% Actual profile extraction
 tic
-[z_elev,r_dist] = extractProfile(tile_data,tile_info,ref_mat_g,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
+[z_elev,r_dist] = extractProfile(tile_data,ellip,ref_mat,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
 ProfileT = toc
 % Temporary function:
 %[z_elev,r_dist,lat,lon] = mapprofile(tile_data,ref_mat,plat,plon,'km',approxMethod,interpMethod);
