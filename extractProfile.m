@@ -10,7 +10,7 @@
 % OUT: path profile plot distance and elevation values
 
 function [z_elev,r_dist] = ...
-extractProfile(tile_data,tile_info,ref_mat,pointSet,latRange,longRange,stepSize,...
+extractProfile(tile_data,e,ref_mat,pointSet,latRange,longRange,stepSize,...
 approxMethod,interpMethod)
 
 %% Declare Vars
@@ -64,7 +64,7 @@ for i = 1:numPairs
             
                 disp('Vincenty Geographical Approximation Method');
                 
-                e = referenceEllipsoid(tile_info.Ellipsoid);
+                %e = referenceEllipsoid(tile_info.Ellipsoid);
                 [arclen, azimuth] = distance(currentBeginPair, currentEndPair, e)
                 ms = arclen;   % already meters
             
