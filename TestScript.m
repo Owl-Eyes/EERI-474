@@ -15,15 +15,16 @@
 % pointSet = [  -14.9100   13.5000
 %              -14.9300   13.4800];
 
-filePath = 's15_e013_1arc_v3.tif'; % Lubango, Huila
+%filePath = 's15_e013_1arc_v3.tif'; % Lubango, Huila
+filePath = 'W020S10.dem'
 
 stepSize = 100; % Distance between samples in m
 
 interpMethod = 'linear';
 
-% approxMethod = 'haversine'; % Great circle
+ approxMethod = 'haversine'; % Great circle
 % approxMethod = 'Vincenty'; % ellipsoidal
- approxMethod = 'Flat'; % Flat Earth
+% approxMethod = 'Flat'; % Flat Earth
 
 fileType = 'tif';
 
@@ -45,14 +46,15 @@ currentEndPair = [];
 
 %% Code Begins
 % Get tile info and data
-[tile_data, tile_info, ref_mat, ref_mat_g] = getTileStuff(filePath);
+[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath);
+
 
 lat_range = [ref_mat.LatitudeLimits(1,1),ref_mat.LatitudeLimits(1,2)];
 long_range = [ref_mat.LongitudeLimits(1,1),ref_mat.LongitudeLimits(1,2)];
 
-UTM = utmzone(lat_range,long_range);
-[ellip,ellipName] = utmgeoid(UTM);
-eCalc = referenceEllipsoid(ellipName);
+% UTM = utmzone(lat_range,long_range);
+% [ellip,ellipName] = utmgeoid(UTM);
+% eCalc = referenceEllipsoid(ellipName);
 
 %% Check Geo. Approx. Method & Get Distance
 
@@ -71,7 +73,7 @@ for i = 1:numPairs
                 projax = axesm('MapProjection','mercator','MapLatLimit',...
                                lat_range,'MapLonLimit',long_range);
                 
-                [proj_tile,proj_ref] = vec2mtx(plats,plons,tile_data,ref_mat_g);            
+                [proj_tile,proj_ref] = vec2mtx(plats,plons,tile_data,ref_mat);            
                            
                 geoshow(projax,proj_tile,proj_ref,'DisplayType','texturemap');  % the DEM texturemap
                 % Projected data???
@@ -100,7 +102,7 @@ for i = 1:numPairs
                 disp('Vincenty Geographical Approximation Method');
                 
                 e = referenceEllipsoid(tile_info.Ellipsoid);
-                [arclen, azimuth] = distance(currentBeginPair, currentEndPair, e)
+                [arclen, azimuth] = distance(currentBeginPair, currentEndPair, eCalc)
                 ms = arclen;   % already meters
             
         else
@@ -132,7 +134,7 @@ end
 
 %% Get Start/End Data "Cells"
 
-[begindex, endex] = ltln2ind(tile_data,ref_mat_g,pointSet);
+[begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet);
 
 %% Get Elevations
 
