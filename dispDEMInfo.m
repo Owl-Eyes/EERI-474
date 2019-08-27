@@ -5,12 +5,12 @@
 %#                                                                     #
 %#######################################################################
 
-% The function used to display the DEM's latitude and longitude limits for
-% the user, as well as various DEM statistics.
-% IN: minimum and maximum elevations, reference matrix
+% The function used to display or simply fetch the DEM's latitude and 
+% longitude limits for the user, as well as various DEM statistics.
+% IN: Reference matrix
 % OUT: Lat and Long limits (simply displays)
 
-function [LatLims, LongLims] = dispDEMInfo(minElev, maxElev, refMatrix)
+function [LatLims, LongLims] = dispDEMInfo(refMatrix)
 
 % Lat and Long value identification
 minlat = int2str(refMatrix.LatitudeLimits(1,1));  % Move to getTileStats function?
