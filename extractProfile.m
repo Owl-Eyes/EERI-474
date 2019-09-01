@@ -9,7 +9,7 @@
 % IN: all key information
 % OUT: path profile plot distance and elevation values
 
-function [z_elev,r_dist] = ...
+function [the_elev,the_dist] = ...
 extractProfile(tile_data,e,ref_mat,pointSet,latRange,longRange,stepSize,...
 approxMethod,interpMethod)
 
@@ -18,11 +18,14 @@ approxMethod,interpMethod)
 %              -14.9300   13.4800];
 
 % points      /```START```\/````END````\
-pointSet = [-14.91 13.5 -14.93 13.48]; % Town
+%pointSet = [-14.91 13.5 -14.93 13.48]; % Town
 %pointSet = [37 -76 67 -76]; %Test values in help function
 
 r_dist = [];
 z_elev = [];
+
+the_dist = [];
+the_elev = [];
 
 plats = [pointSet(:,1) pointSet(:,3)];
 plons = [pointSet(:,2) pointSet(:,4)];
@@ -113,17 +116,16 @@ for i = 1:numPairs
             
         end
           
-end
-
+        the_dist{i} = r_dist; % Array of distances (multiple pointset)
 
 %% Get Start/End Data "Cells"
 
-[begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet);
+[begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet(i,:));
 
 %% Get Elevations
 
 % Declare elevation array
-z_elev = zeros(nlegs+1,1);
+%z_elev = zeros(nlegs+1,1);
 
 % Get elevation acc. to type
 if (strcmp(approxMethod,'flat') == 1)
@@ -157,3 +159,6 @@ if (strcmp(approxMethod,'flat') == 1)
 
 end
 
+    the_elev{i} = z_elev;    % Array of distances (multiple pointset)
+    
+end
