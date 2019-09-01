@@ -7,17 +7,24 @@
 
 % This function reads the tile file, and stores all useful information
 % and data in a format usable by the main code and other sub-functions.
-% IN: the file path and name together
+% IN: the file path and name together, file type (for specifying special
+% cases such as world files
 % OUT: the dem data, metadata, reference matrix, and coordinate ranges
 
-function [tileData, e, refMat, lat_range, long_range] = getTileStuff(tileName)
+function [tileData, e, refMat, lat_range, long_range] = getTileStuff(tileName, fileType)
 
 %tileName = '9129CATD.ddf';
 
 % Determine file extension
 lowerTile = lower(tileName);
-tileExtension = extractAfter(lowerTile,'.');
-tileNameOnly = extractBefore(tileName,'.');
+
+% try    
+    tileExtension = extractAfter(lowerTile,'.')
+    tileNameOnly = extractBefore(tileName,'.');
+% catch    
+%     warning('No file extension found. Assume to be a WORLD file...');
+%     tileExtension = 'world'
+% end
 
 % Sort file formats
 if (strcmp(tileExtension,'tif') || strcmp(tileExtension,'tiff')) %GeoTiff files
@@ -50,6 +57,27 @@ elseif strcmp(tileExtension,'dem') % GTOPO30 files
     UTM = utmzone(lat_range,long_range);
     [ellip,ellipName] = utmgeoid(UTM);
     e = referenceEllipsoid(ellipName);
+    
+    
+    % Removed until appropriate data file obtained for testing
+    
+% elseif strcmp(fileType,'wld') && ~strcmp(tileExtension,'')% WORLD file method    
+%     % tfw, tifw, jgw, jpgw, pgw, bpw, bipw, bmpw, blw, bilw, bqw, bsqw,
+%     % btw, rcw, rlcw, sdw
+%      try
+%         % get world file stuff
+%         
+%         %tileName = strcat(tileName,'.tif');
+%         
+%         tileData = imread(tileName);
+%         worldFileName = getworldfilename(tileName);
+%         refMat = worldfileread(worldFileName,'geographic',size(tileData))
+%         
+%         
+%      catch
+%         % was just a faulty filename after all
+%         errordlg('File missing extension','File Error');
+%      end
     
 else
     errordlg('File not currently supported','File Error');
