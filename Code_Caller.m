@@ -13,18 +13,24 @@
 
 %% Vars
 
-%tile_name = 's15_e013_1arc_v3.tif'; % Lubango, Huila
-tile_name = 'W020S10.dem'; % Western SA + Namibia + S. Angola
+tile_name = 's15_e013_1arc_v3.tif'; % Lubango, Huila
+% tile_name = 'W020S10.dem'; % Western SA + Namibia + S. Angola
 
 % plon = [13 13.25 13.5 13.75 14]; % Across
 % plat = [-15 -14.75 -14.5 -14.25 -14];
 
-% points   /```START```\/````END````\
-pointSet = [-14.91 13.5 -14.93 13.48]; % Town
+% points   /```START```\/````END````\ 
+%pointSet = [-14.91 13.5 -14.93 13.48]; % Town
+%          \ lat  long / \ lat long /
+
+% points      /```START```\/````END````\
+pointSet =   [-14.91 13.5 -14.93 13.48 %]   % Town
+              -14.25 13.25 -14.75 13.75]; % DiagoNal section
+%             \ lat  long / \ lat long /
 
 stepSize = 100; % Distance between samples (in meters)
 
-interpMethod = 'Cubic';
+interpMethod = 'Linear';
 approxMethod = 'Vincenty'; % Great circle
 fileType = 'tif';   % Currently unused
 
