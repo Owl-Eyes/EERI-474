@@ -64,7 +64,7 @@ lon = [];               % the profile longitude values
 
 %% Get tile info and data
 tic;
-[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath);
+[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath, fileType);
 TileStuffT = toc
 
 %% Get tile stats
