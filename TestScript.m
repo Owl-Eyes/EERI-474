@@ -15,8 +15,9 @@
 % pointSet = [  -14.9100   13.5000
 %              -14.9300   13.4800];
 
-%filePath = 's15_e013_1arc_v3.tif'; % Lubango, Huila
-filePath = 'W020S10.dem'
+ filePath = 's15_e013_1arc_v3.tif'; % Lubango, Huila
+% filePath = 'W020S10.dem'; % GTOPO30 file
+% filePath = 'D:\Work\University Final Year\EERI 474\Main Matlab Code\k10g'; % WORLD file
 
 stepSize = 100; % Distance between samples in m
 
@@ -29,7 +30,9 @@ interpMethod = 'linear';
 fileType = 'tif';
 
 % points      /```START```\/````END````\
-pointSet = [-14.91 13.5 -14.93 13.48]; % Town
+pointSet =   [-14.91 13.5 -14.93 13.48 %]   % Town
+              -14.25 13.25 -14.75 13.75]; % DiagoNal section
+%             \ lat  long / \ lat long /
 %pointSet = [37 -76 67 -76]; %Test values in help function
 
 plats = [pointSet(1,1) pointSet(1,3)];
@@ -39,14 +42,14 @@ R = earthRadius('meters');
 
 nlegs = 0;
 
-numPairs = length(pointSet(:,1));
+numPairs = length(pointSet(:,1))
 
 currentBeginPair = [];
 currentEndPair = [];
 
 %% Code Begins
 % Get tile info and data
-[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath);
+[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath, fileType);
 
 
 lat_range = [ref_mat.LatitudeLimits(1,1),ref_mat.LatitudeLimits(1,2)];
@@ -128,18 +131,20 @@ for i = 1:numPairs
             tempdist = tempdist + stepSize;
             
         end
+        
+        the_dist(i,1:nlegs+1) = r_dist;
           
-end
+
 
 
 %% Get Start/End Data "Cells"
 
-[begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet);
+[begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet(i,:));
 
 %% Get Elevations
 
 % Declare elevation array
-z_elev = zeros(nlegs+1,1);
+z_elev = zeros();
 
 % Get elevation acc. to type
 if (strcmp(approxMethod,'flat') == 1)
@@ -149,28 +154,30 @@ if (strcmp(approxMethod,'flat') == 1)
     %z_elev(inGrid) = geointerp(tile_data, ref_mat, plats(inGrid), plons(inGrid), interpMethod);
 
 
-    elseif (strcmp(approxMethod,'haversine') == 1)  % Great Circle Elevation
+elseif (strcmp(approxMethod,'haversine') == 1)  % Great Circle Elevation
 
-            disp('Haversine Geographical Elevation Method');
-            
-            pts = gcwaypts(currentBeginPair(1,1),currentBeginPair(1,2), ...
-                  currentEndPair(1,1),currentEndPair(1,2),nlegs);
-              
-            z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod);  
+        disp('Haversine Geographical Elevation Method');
 
-    elseif (strcmp(approxMethod,'vincenty') == 1) % Ellipsoidal Elevation
+        pts = gcwaypts(currentBeginPair(1,1),currentBeginPair(1,2), ...
+              currentEndPair(1,1),currentEndPair(1,2),nlegs);
 
-            disp('Vincenty Geographical Approximation Method');
+        z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod);  
 
-            pts = track2(currentBeginPair(1,1),currentBeginPair(1,2), ...
-                  currentEndPair(1,1),currentEndPair(1,2),e,'degrees',nlegs+1);
-            
-            z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod);  
+elseif (strcmp(approxMethod,'vincenty') == 1) % Ellipsoidal Elevation
 
-    else
+        disp('Vincenty Geographical Approximation Method');
 
-            disp('Invalid Elevation Extraction Method');
+        pts = track2(currentBeginPair(1,1),currentBeginPair(1,2), ...
+              currentEndPair(1,1),currentEndPair(1,2),e,'degrees',nlegs+1);
+
+        z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod); 
+
+else
+
+        disp('Invalid Elevation Extraction Method');
 
 end
 
-
+    the_elev(i, 1:nlegs+1) = z_elev;
+    
+end
