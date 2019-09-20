@@ -32,9 +32,10 @@ function [r_dist, z_elev] = PEPE(filePath, pointSet, stepSize, interpMethod, app
 tStart = tic;
 %% Start-up Performance Improvement
 
+% Likely parallel processing functions:
 
-
-
+% parpool(name, size, ...);
+% parfor(loopVar, ...) %For the different point set rows?
 
 %% Variable Declarations
 
@@ -73,9 +74,9 @@ tic;
 TileStatsT = toc
 
 %% Plot tile in figure
-tic
-plotDEM(tile_data, ref_mat);
-plotDEMT = toc
+% tic
+plotDEM(tile_data, ref_mat); % Optional
+% plotDEMT = toc
 
  %% Find DEM information
 % tic;
