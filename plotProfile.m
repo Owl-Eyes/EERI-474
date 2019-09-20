@@ -38,7 +38,7 @@ for i = 1:numPlots
     xlabel(xlabelvar)
     ylabel(ylabelvar)
     pbaspect auto;
-    plot(deg2km(ri_now),zi_now/1000,'Color',[0,0.7,0.9]);
+    plot(ri_now/1000,zi_now/1000,'Color',[0,0.7,0.9]);
     %daspect([ 1 1/1000 1 ]); % Choose 1/1 for display without exaggeration
 
 end
