@@ -13,8 +13,6 @@
 
 function [tileData, e, refMat, lat_range, long_range] = getTileStuff(tileName, fileType)
 
-%tileName = '9129CATD.ddf';
-
 % Determine file extension
 lowerTile = lower(tileName);
 
