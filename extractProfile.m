@@ -61,7 +61,8 @@ for i = 1:numPairs
                 disp('Haversine Geographical Approximation Method');
 
                 [arclen, azimuth] = distance(currentBeginPair, currentEndPair)
-                ms = deg2km(arclen) * 1000;   % to meters
+                kms = deg2km(arclen) * 1000;   % to meters
+                ms = kms * 1000;
                 
         elseif (strcmp(approxMethod,'vincenty') == 1)
             
@@ -70,7 +71,8 @@ for i = 1:numPairs
                 %e = referenceEllipsoid(tile_info.Ellipsoid);
                 [arclen, azimuth] = distance(currentBeginPair, currentEndPair, e)
                 ms = arclen;   % already meters
-            
+                kms = ms / 1000;
+                
         elseif (strcmp(approxMethod,'flat') == 1)
             
                 disp('Flat Earth Geographical Approximation Method \n');
@@ -79,6 +81,67 @@ for i = 1:numPairs
                 %               lat_range,'MapLonLimit',long_range);
                 
                 
+                % Data for axesm?
+                
+                %getm(h,'aspect')
+                % 
+                % ans =
+                %      normal
+                % 
+                % getm(h,'origin')
+                % 
+                % ans =
+                %      0     0     0
+                % 
+                % getm(h,'scalefactor')
+                % 
+                % ans =
+                %      1
+                % 
+                % getm(h,'nparallels')
+                % 
+                % ans =
+                %      1
+                % 
+                % getm(h,'mapparallels')
+                % 
+                % ans =
+                %      0
+                % 
+                % getm(h,'falsenorthing')
+                % 
+                % ans =
+                %      0
+                % 
+                % getm(h,'falseeasting')
+                % 
+                % ans =
+                %      0
+                % 
+                % getm(h,'zone')
+                % 
+                % ans =
+                %      []
+                % 
+                % getm(h,'maplatlimit')
+                % 
+                % ans =
+                %    -86    86
+                % 
+                % getm(h,'maplonlimit')
+                % 
+                % ans =
+                %   -180   180
+                % 
+                % getm(h,'Flatlimit')
+                % 
+                % ans =
+                %    -86    86
+                % 
+                % getm(h,'Flonlimit')
+                % 
+                % ans =
+                %   -180   180
                 
                 % Latitude degrees to radians
                 phi1 = deg2rad(pointSet(i,1)); 
@@ -90,8 +153,8 @@ for i = 1:numPairs
                 
                 x = (lam2 - lam1) * cos((phi1+phi2)/2);  % Change in x
                 y = (phi2 - phi1);                       % Change in y
-                ms = deg2km(sqrt((x)^2 + (y)^2) * R) * 1000 ;  % Distance
-                    
+                kms = deg2km(sqrt((x)^2 + (y)^2) * R) ;  % Distance
+                ms = kms * 1000;    
         else
             
                 disp('Invalid Geographical Approximation Method');
