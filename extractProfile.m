@@ -37,7 +37,7 @@ numPairs = length(pointSet(:,1));
 currentBeginPair = [];
 currentEndPair = [];
 
-UTM = utmzone(latRange,longRange);
+% UTM = utmzone(latRange,longRange);
 
 %% Code Begins
 % Get tile info and data

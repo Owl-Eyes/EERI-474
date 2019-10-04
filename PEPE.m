@@ -28,7 +28,7 @@
 % fileType - the file extension of the data   ( CURRENTLY UNUSED )
 %            'tif','tiff', or 'ddf'
 
-function [r_dist, z_elev] = PEPE(filePath, pointSet, stepSize, interpMethod, approxMethod, fileType)
+function [r_dist, z_elev] = PEPE(filePath, pointSet, stepSize, interpMethod, approxMethod, deg)
 tStart = tic;
 %% Start-up Performance Improvement
 
@@ -65,7 +65,7 @@ lon = [];               % the profile longitude values
 
 %% Get tile info and data
 tic;
-[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath, fileType);
+[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath);
 TileStuffT = toc
 
 %% Get tile stats
@@ -89,8 +89,8 @@ plotDEM(tile_data, ref_mat); % Optional
 % points      /```START```\/````END````\
 % pointSet = [-14.91 13.5 -14.93 13.48]; % Town
 
-plat = [pointSet(:,1) pointSet(:,3)];
-plon = [pointSet(:,2) pointSet(:,4)];
+% plat = [pointSet(:,1) pointSet(:,3)];
+% plon = [pointSet(:,2) pointSet(:,4)];
 
 %% Actual profile extraction
 tic
@@ -102,7 +102,7 @@ ProfileT = toc
 
 %% Plot path/elevation profile
 tic;
-plotProfile(r_dist,z_elev);
+plotProfile(r_dist,z_elev, pointSet, deg);
 PlotProfileT = toc
 
 %% Temp Tests

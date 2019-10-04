@@ -49,7 +49,7 @@ currentEndPair = [];
 
 %% Code Begins
 % Get tile info and data
-[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath, fileType);
+[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath);
 
 
 lat_range = [ref_mat.LatitudeLimits(1,1),ref_mat.LatitudeLimits(1,2)];

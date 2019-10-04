@@ -11,7 +11,7 @@
 % cases such as world files
 % OUT: the dem data, metadata, reference matrix, and coordinate ranges
 
-function [tileData, e, refMat, lat_range, long_range] = getTileStuff(tileName, fileType)
+function [tileData, e, refMat, lat_range, long_range] = getTileStuff(tileName)
 
 % Determine file extension
 lowerTile = lower(tileName);
@@ -33,29 +33,23 @@ if (strcmp(tileExtension,'tif') || strcmp(tileExtension,'tiff')) %GeoTiff files
     % Geographical objects
     refMat = georefcells(refMatp.LatitudeLimits,refMatp.LongitudeLimits,refMatp.RasterSize);
     
-    [lat_range, long_range] = dispDEMInfo(refMat);
+    [lat_range, long_range, e] = dispDEMInfo(refMat);
     
-    e = referenceEllipsoid(tileInfo.Ellipsoid);
+    % e = referenceEllipsoid(tileInfo.Ellipsoid);
     
-elseif strcmp(tileExtension,'ddf') % SDTS files
-    [tileData, refMat] = sdtsdemread(tileName); % get tile data and reference matix
-    tileInfo = sdtsinfo(tileName);              % get tile metadata
-    tileData = double(tileData);                % Convert data to doubles
-    
-    [lat_range, long_range] = dispDEMInfo(refMat);
+% elseif strcmp(tileExtension,'ddf') % SDTS files
+%     [tileData, refMat] = sdtsdemread(tileName); % get tile data and reference matix
+%     tileInfo = sdtsinfo(tileName);              % get tile metadata
+%     tileData = double(tileData);                % Convert data to doubles
+%     
+%     [lat_range, long_range] = dispDEMInfo(refMat);
     
     
 elseif strcmp(tileExtension,'dem') % GTOPO30 files
     [tileData,refvec] = gtopo30(tileNameOnly); % Include lat and long lims in future
     rasterSize = size(tileData);
     refMat = refvecToGeoRasterReference(refvec,rasterSize);
-    [lat_range, long_range] = dispDEMInfo(refMat);
-    
-    % Calculate the reference ellipsoid
-    UTM = utmzone(lat_range,long_range);
-    [ellip,ellipName] = utmgeoid(UTM);
-    e = referenceEllipsoid(ellipName);
-    
+    [lat_range, long_range, e] = dispDEMInfo(refMat);  
     
     % Removed until appropriate data file obtained for testing
     
