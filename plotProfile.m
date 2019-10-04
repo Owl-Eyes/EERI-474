@@ -10,27 +10,48 @@
 % IN: profile distance and elevation
 % OUT: void (simply plots path/elevation profile)
 
-function [] = plotProfile(ri, zi)
+function [] = plotProfile(ri, zi, pointSet, deg)
 
 numPlots = length(ri(1,:));
+
+switch nargin
+    case 3
+        titlevar2 = ' of the Selected Area, Path: ';
+    case 4
+        titlevar2 = ' in a Line to the Receiver at Degree: ';
+    otherwise
+        dislay('Incorrect number of inputs to plotProfile function!')            
+end
+
 
 for i = 1:numPlots
     
     % Fetch current distance and elevation from cell arrays
     ri_now = ri{1,i};
     zi_now = zi{1,i};
-
+    
+    % Current coordinates  
+    beginCoordvar = strcat(num2str(pointSet(i,1),3),',',num2str(pointSet(i,2),3));
+    endCoordvar = strcat(num2str(pointSet(i,3),3),',',num2str(pointSet(i,4),3));
+    coordvar = strcat('` (',beginCoordvar,'` to` ',endCoordvar,')');
+    
     % Plot variables
     pathOrelev = 'Path';
-    titlevar = ' the Selected Area';
     xlabelvar = 'Surface Distance';
     ylabelvar = 'Elevation';
     unitvar = ' (km)';
+    
+    switch nargin
+        case 3
+            numericalvar = strcat(' `',int2str(i));
+        case 4
+            numericalvar = strcat(' `',num2str(deg(i,1)));
+    end
 
     % Complete titles
     xlabelvar = strcat(xlabelvar,unitvar);
     ylabelvar = strcat(ylabelvar,unitvar);
-    titlevar = strcat(pathOrelev,' Profile of ',titlevar,' ',int2str(i));
+    titlevar = strcat(pathOrelev,' Profile ',titlevar2,numericalvar,coordvar);
 
     figure
     hold on

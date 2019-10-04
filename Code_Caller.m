@@ -14,8 +14,8 @@ clear all % For memory freeing and repeatability analysis
 
 %% Vars
 
-%tile_name = 's15_e013_1arc_v3.tif'; % Lubango, Huila
-tile_name = 'W020S10.dem'; % Western SA + Namibia + S. Angola
+ tile_name = 's15_e013_1arc_v3.tif'; % Lubango, Huila
+% tile_name = 'W020S10.dem'; % Western SA + Namibia + S. Angola
 %tileName = '9129CATD.ddf';
 
 
@@ -31,7 +31,7 @@ tile_name = 'W020S10.dem'; % Western SA + Namibia + S. Angola
 %               -14.25 13.25 -14.75 13.75]; % DiagoNal section
 %             \ lat  long / \ lat long /
 
-stepSize = 100; % Distance between samples (in meters)
+stepSize = 10; % Distance between samples (in meters)
 
 interpMethod = 'Linear';
 approxMethod = 'Vincenty'; % Vincenty, Haversine, or Flat
@@ -80,9 +80,9 @@ end
 
 % Get profile data
 [distData, elevData] = ...
- PEPE(tile_name,egPointSet,stepSize,interpMethod,approxMethod,fileType);
+ PEPE(tile_name,egPointSet,stepSize,interpMethod,approxMethod, deg);
 % Plot results in a figure (optional)
-%plotProfile(distData, elevData);
+%plotProfile(distData, elevData, pointSet, deg);
 
 %toc;    % End total timer
 %TotalDuration = toc

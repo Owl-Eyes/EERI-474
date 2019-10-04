@@ -15,12 +15,21 @@ function [] = plotDEM(tile, refMat)
 figure  % New figure
 
 worldAxes = worldmap(tile,refMat);  % Lat/long axes
+hold on
 
-geoshow(tile,refMat,'DisplayType','texturemap');  % the DEM texturemap
+title('Texture Map of the Selected Region')          % Plot labels
+xlabel('Latitude')
+ylabel('Longitude')
 
-%daspect([ 1 1 1 ]);
-
+geoshow(tile,refMat,'DisplayType','surface');  % the DEM texturemap
 demcmap(tile);
+cbar = colorbar
+title(cbar,'Height w.r.t. Sea Level (m)')
+
+daspectm('m',5)
+ view(3)       % for 3D visualization
+% axis normal
+% tightmap
 
 %plotDEMStart = tic;
 %axis off
