@@ -74,9 +74,9 @@ tic;
 TileStatsT = toc
 
 %% Plot tile in figure
-% tic
+ tic
 plotDEM(tile_data, ref_mat); % Optional
-% plotDEMT = toc
+ plotDEMT = toc
 
  %% Find DEM information
 % tic;
@@ -101,9 +101,18 @@ ProfileT = toc
 
 
 %% Plot path/elevation profile
-tic;
-plotProfile(r_dist,z_elev, pointSet, deg);
-PlotProfileT = toc
+
+
+if nargin == 5
+    tic;
+    plotProfile(r_dist,z_elev, pointSet);
+    PlotProfileT = toc
+else
+    tic;
+    plotProfile(r_dist,z_elev, pointSet, deg);
+    PlotProfileT = toc
+end
+    
 
 %% Temp Tests
 % 
