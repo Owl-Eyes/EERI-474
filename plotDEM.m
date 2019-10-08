@@ -23,7 +23,7 @@ ylabel('Longitude')
 
 geoshow(tile,refMat,'DisplayType','surface');  % the DEM texturemap
 demcmap(tile);
-cbar = colorbar
+cbar = colorbar;
 title(cbar,'Height w.r.t. Sea Level (m)')
 
 daspectm('m',5)
