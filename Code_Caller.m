@@ -27,14 +27,14 @@ clear all % For memory freeing and repeatability analysis
 %          \ lat  long / \ lat long /
 
 % points      /```START```\/````END````\
-% pointSet =   [-14.91 13.5 -14.93 13.48 %]   % Town
-%               -14.25 13.25 -14.75 13.75]; % DiagoNal section
+ pointSet =   [-14.91 13.5 -14.93 13.48 %]   % Town
+               -14.25 13.25 -14.75 13.75]; % DiagoNal section
 %             \ lat  long / \ lat long /
 
-stepSize = 10; % Distance between samples (in meters)
+stepSize = 100; % Distance between samples (in meters)
 
 interpMethod = 'Linear';
-approxMethod = 'Vincenty'; % Vincenty, Haversine, or Flat
+approxMethod = 'Haversine'; % Vincenty, Haversine, or Flat
 fileType = 'tif';   % Currently unused
 
 
@@ -62,7 +62,7 @@ degStart = 0;    % Starting degree (0` is positive x-axis relative to a 2D Carte
 degEnd = 180;    % Ending degree (anti-clockwise taken as positive, max 360`)
 deltaDeg = 60;   % Change in degrees, moving anticlockise from beginning point
 
-[deg, RXCoords] = getRXCoords(TXCoords,d,degStart,degEnd,deltaDeg)
+[deg, RXCoords] = getRXCoords(TXCoords,d,degStart,degEnd,deltaDeg);
 
 for i = 1:length(deg)
     
@@ -79,8 +79,11 @@ end
 %tic;  % Start total timer
 
 % Get profile data
+%[distData, elevData] = ...
+%               PEPE(tile_name,pointSet,stepSize,interpMethod,approxMethod);
 [distData, elevData] = ...
- PEPE(tile_name,egPointSet,stepSize,interpMethod,approxMethod, deg);
+    PEPE(tile_name,egPointSet,stepSize,interpMethod,approxMethod,deg);
+
 % Plot results in a figure (optional)
 %plotProfile(distData, elevData, pointSet, deg);
 
