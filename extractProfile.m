@@ -21,21 +21,21 @@ approxMethod,interpMethod)
 %pointSet = [-14.91 13.5 -14.93 13.48]; % Town
 %pointSet = [37 -76 67 -76]; %Test values in help function
 
-r_dist = [];
-z_elev = [];
+% r_dist = [];
+% z_elev = [];
+% 
+% the_dist = [];
+% the_elev = [];
 
-the_dist = [];
-the_elev = [];
-
-plats = [pointSet(:,1) pointSet(:,3)];
-plons = [pointSet(:,2) pointSet(:,4)];
+% plats = [pointSet(:,1) pointSet(:,3)];
+% plons = [pointSet(:,2) pointSet(:,4)];
 
 R = earthRadius('meters');
 
 numPairs = length(pointSet(:,1));
 
-currentBeginPair = [];
-currentEndPair = [];
+% currentBeginPair = [];
+% currentEndPair = [];
 
 % UTM = utmzone(latRange,longRange);
 
@@ -50,116 +50,30 @@ currentEndPair = [];
 
 approxMethod = lower(approxMethod); %Text to lowercase for some error prevention
 
-for i = 1:numPairs
+% "slice" pointSet
+beginlat = pointSet(:,1);
+beginlon = pointSet(:,2);
+endlat = pointSet(:,3);
+endlon = pointSet(:,4);
+
+tic
+%% Haversine
+
+if (strcmp(approxMethod,'haversine') == 1)
     
-        currentBeginPair = [pointSet(i,1), pointSet(i,2)];
-        currentEndPair = [pointSet(i,3), pointSet(i,4)];
-
+    disp('Haversine Geographical Approximation Method');
+    
+    %for i = 1:(numPairs)
+    parfor i = 1:numPairs  
+    
+        % Current path coordinates
+        currentBeginPair = [beginlat(i), beginlon(i)];
+        currentEndPair = [endlat(i), endlon(i)];        
         
-        if (strcmp(approxMethod,'haversine') == 1)
-            
-                disp('Haversine Geographical Approximation Method');
-
-                [arclen, azimuth] = distance(currentBeginPair, currentEndPair)
-                kms = deg2km(arclen) * 1000;   % to meters
-                ms = kms * 1000;
-                
-        elseif (strcmp(approxMethod,'vincenty') == 1)
-            
-                disp('Vincenty Geographical Approximation Method');
-                
-                %e = referenceEllipsoid(tile_info.Ellipsoid);
-                [arclen, azimuth] = distance(currentBeginPair, currentEndPair, e)
-                ms = arclen;   % already meters
-                kms = ms / 1000;
-                
-        elseif (strcmp(approxMethod,'flat') == 1)
-            
-                disp('Flat Earth Geographical Approximation Method \n');
-               
-                %projax = axesm('MapProjection','mercator','MapLatLimit',...
-                %               lat_range,'MapLonLimit',long_range);
-                
-                
-                % Data for axesm?
-                
-                %getm(h,'aspect')
-                % 
-                % ans =
-                %      normal
-                % 
-                % getm(h,'origin')
-                % 
-                % ans =
-                %      0     0     0
-                % 
-                % getm(h,'scalefactor')
-                % 
-                % ans =
-                %      1
-                % 
-                % getm(h,'nparallels')
-                % 
-                % ans =
-                %      1
-                % 
-                % getm(h,'mapparallels')
-                % 
-                % ans =
-                %      0
-                % 
-                % getm(h,'falsenorthing')
-                % 
-                % ans =
-                %      0
-                % 
-                % getm(h,'falseeasting')
-                % 
-                % ans =
-                %      0
-                % 
-                % getm(h,'zone')
-                % 
-                % ans =
-                %      []
-                % 
-                % getm(h,'maplatlimit')
-                % 
-                % ans =
-                %    -86    86
-                % 
-                % getm(h,'maplonlimit')
-                % 
-                % ans =
-                %   -180   180
-                % 
-                % getm(h,'Flatlimit')
-                % 
-                % ans =
-                %    -86    86
-                % 
-                % getm(h,'Flonlimit')
-                % 
-                % ans =
-                %   -180   180
-                
-                % Latitude degrees to radians
-                phi1 = deg2rad(pointSet(i,1)); 
-                phi2 = deg2rad(pointSet(i,3));
-                
-                % Longitudes
-                lam1 = pointSet(i,2);
-                lam2 = pointSet(i,4);
-                
-                x = (lam2 - lam1) * cos((phi1+phi2)/2);  % Change in x
-                y = (phi2 - phi1);                       % Change in y
-                kms = deg2km(sqrt((x)^2 + (y)^2) * R) ;  % Distance
-                ms = kms * 1000;    
-        else
-            
-                disp('Invalid Geographical Approximation Method');
-            
-        end
+        % Distance        
+        [arclen, azimuth] = distance(currentBeginPair, currentEndPair);
+        kms = deg2km(arclen);   % to meters
+        ms = kms * 1000;
         
         % FINAL DISTANCE ARRAY
         
@@ -180,48 +94,159 @@ for i = 1:numPairs
         end
           
         the_dist{i} = r_dist; % Array of distances (multiple pointset)
+        
+        % Get Start/End Data "Cells"
+        [begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet(i,:));
 
-%% Get Start/End Data "Cells"
-
-[begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet(i,:));
-
-%% Get Elevations
-
-% Declare elevation array
-%z_elev = zeros(nlegs+1,1);
-
-% Get elevation acc. to type
-if (strcmp(approxMethod,'flat') == 1)
-            
-    disp('Flat Earth Geographical Elevation Method Not Yet Supported\n'); % Flat Elevation
-          
-    %z_elev(inGrid) = geointerp(tile_data, ref_mat, plats(inGrid), plons(inGrid), interpMethod);
-
-
-    elseif (strcmp(approxMethod,'haversine') == 1)  % Great Circle Elevation
-
-            disp('Haversine Geographical Elevation Method');
-            
-            pts = gcwaypts(currentBeginPair(1,1),currentBeginPair(1,2), ...
-                  currentEndPair(1,1),currentEndPair(1,2),nlegs);
+        % Get Elevations           
+        %disp('Haversine Geographical Elevation Method');
+        
+        pts = gcwaypts(currentBeginPair(1,1),currentBeginPair(1,2), ...
+              currentEndPair(1,1),currentEndPair(1,2),nlegs);
               
-            z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod);  
+        z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod);
+        
+        % FINAL HAVERSINE ELEVATION ARRAY
+        
+        the_elev{i} = z_elev;    % Array of distances (multiple pointset)
+   
+    end
 
-    elseif (strcmp(approxMethod,'vincenty') == 1) % Ellipsoidal Elevation
+        
+%% Vincenty
 
-            disp('Vincenty Geographical Approximation Method');
+elseif (strcmp(approxMethod,'vincenty') == 1) % Ellipsoidal Elevation
+    
+    disp('Vincenty Geographical Approximation Method');
+     
+    %for i = 1:(numPairs)
+    parfor i = 1:numPairs 
+        
+        % Current path coordinates
+        currentBeginPair = [beginlat(i), beginlon(i)];
+        currentEndPair = [endlat(i), endlon(i)]; 
+    
+        % Distance
+        [arclen, azimuth] = distance(currentBeginPair, currentEndPair, e);
+        ms = arclen;   % already meters
+        kms = ms / 1000;
 
-            pts = track2(currentBeginPair(1,1),currentBeginPair(1,2), ...
-                  currentEndPair(1,1),currentEndPair(1,2),e,'degrees',nlegs+1);
+        % FINAL VINCENTY DISTANCE ARRAY
+        
+        % Determine number of "legs" between points along path
+        nlegs = round(ms/stepSize); %improve round into fraction?
+        
+        % Declare distance array
+        r_dist = zeros(nlegs+1,1);
+        
+        % Populate distance array
+        tempdist = 0;
+        
+        for j = 1:nlegs+1
             
-            z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod);  
+            r_dist(j,1) = tempdist;
+            tempdist = tempdist + stepSize;
+            
+        end
+          
+        the_dist{i} = r_dist; % Array of distances (multiple pointset)
+        
+        % Get Start/End Data "Cells"
 
-    else
+        [begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet(i,:));
 
-            disp('Invalid Elevation Extraction Method');
+        % Get Elevations
+        %disp('Vincenty Geographical Elevation Method');
 
-end
+        pts = track2(currentBeginPair(1,1),currentBeginPair(1,2), ...
+              currentEndPair(1,1),currentEndPair(1,2),e,'degrees',nlegs+1);
 
-    the_elev{i} = z_elev;    % Array of distances (multiple pointset)
+        z_elev = geointerp(tile_data, ref_mat, pts(:,1), pts(:,2), interpMethod);  
+
+        % FINAL VINCENTY ELEVATION ARRAY
+        
+        the_elev{i} = z_elev;    % Array of distances (multiple pointset)
+    end
+    
+                          
+%% Flat
+
+elseif (strcmp(approxMethod,'flat') == 1)
+            
+    disp('Flat Earth Geographical Approximation Method \n');
+    
+    %for i = 1:(numPairs)
+    parfor i = 1:numPairs 
+        
+        % Current path coordinates
+        currentBeginPair = [beginlat(i), beginlon(i)];
+        currentEndPair = [endlat(i), endlon(i)]; 
+    
+        % Distance
+        %projax = axesm('MapProjection','mercator','MapLatLimit',...
+        %               lat_range,'MapLonLimit',long_range);
+
+
+        % Data for axesm?
+
+        %getm(h,'aspect')
+
+        % Latitude degrees to radians
+        phi1 = deg2rad(beginlat(i)); 
+        phi2 = deg2rad(endlat(i));
+
+        % Longitudes
+        lam1 = beginlon(i);
+        lam2 = endlon(i);
+
+        x = (lam2 - lam1) * cos((phi1+phi2)/2);  % Change in x
+        y = (phi2 - phi1);                       % Change in y
+        kms = deg2km(sqrt((x)^2 + (y)^2) * R) ;  % Distance
+        ms = kms * 1000; 
+
+
+
+        % FINAL FLAT DISTANCE ARRAY
+        
+        % Determine number of "legs" between points along path
+        nlegs = round(ms/stepSize); %improve round into fraction?
+        
+        % Declare distance array
+        r_dist = zeros(nlegs+1,1);
+        
+        % Populate distance array
+        tempdist = 0;
+        
+        for j = 1:nlegs+1
+            
+            r_dist(j,1) = tempdist;
+            tempdist = tempdist + stepSize;
+            
+        end
+          
+        the_dist{i} = r_dist; % Array of distances (multiple pointset)
+        
+        % Get Start/End Data "Cells"
+
+        [begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet(i,:));
+        
+        % Get Elevations
+        %disp('Flat Earth Geographical Elevation Method Not Yet Supported\n'); % Flat Elevation
+          
+        %z_elev(inGrid) = geointerp(tile_data, ref_mat, plats(inGrid), plons(inGrid), interpMethod);
+
+        % FINAL FLAT ELEVATION ARRAY 
+        
+        the_elev{i} = z_elev;    % Array of distances (multiple pointset)
+        
+    end
+    
+%% Invalid Method
+
+else    % Not Haversine, Vincenty, or Flat
+    
+    ('Invalid Geographical Approximation Method');
     
 end
+TForLoop = toc  
+
