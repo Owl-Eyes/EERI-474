@@ -11,10 +11,7 @@
 % OUT: Two Matrix indices
 
 function [begindex,endex] = ltln2ind(map,mapref,pointSet)
-
-% if nargin < 4
-% 	error('Incorrect number of arguments');
-% end
+% tic;
 
 % Indices of beginning lat/lon
 [brow,bcol] = setpostn(map,mapref,pointSet(1,1),pointSet(1,2));
@@ -24,4 +21,5 @@ begindex = [brow,bcol];
 [erow,ecol] = setpostn(map,mapref,pointSet(1,3),pointSet(1,4));
 endex = [erow,ecol];
 
+% ltlnT = toc;
 end
