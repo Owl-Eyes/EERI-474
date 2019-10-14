@@ -14,6 +14,7 @@ function [] = plotProfile(ri, zi, pointSet, deg)
 
 numPlots = length(ri(1,:));
 
+% Check use case
 switch nargin
     case 3
         titlevar2 = ' of the Selected Area, Path: ';
@@ -41,6 +42,7 @@ for i = 1:numPlots
     ylabelvar = 'Elevation';
     unitvar = ' (km)';
     
+    % Get varaible for row/entry reference
     switch nargin
         case 3
             numericalvar = strcat(' `',int2str(i));
@@ -53,16 +55,16 @@ for i = 1:numPlots
     ylabelvar = strcat(ylabelvar,unitvar);
     titlevar = strcat(pathOrelev,' Profile ',titlevar2,numericalvar,coordvar);
 
+    % Actual plot
     figure
     hold on
     title(titlevar)          % Plot labels
     xlabel(xlabelvar)
     ylabel(ylabelvar)
     pbaspect auto;
-    plot(ri_now/1000,zi_now/1000,'Color',[0,0.7,0.9]);
+    plot(ri_now/1000,zi_now/1000,'Color',[0,0.7,0.9]); % to kms
     %daspect([ 1 1/1000 1 ]); % Choose 1/1 for display without exaggeration
 
 end
-%axis off
 
 end
