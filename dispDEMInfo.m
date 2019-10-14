@@ -11,7 +11,7 @@
 % OUT: Lat and Long limits (simply displays)
 
 function [LatLims, LongLims, e] = dispDEMInfo(refMatrix)
-
+%tic;
 % Lat and Long value identification
 minlat = int2str(refMatrix.LatitudeLimits(1,1));  % Move to getTileStats function?
 maxlat = int2str(refMatrix.LatitudeLimits(1,2));
@@ -19,12 +19,13 @@ maxlat = int2str(refMatrix.LatitudeLimits(1,2));
 minlong = int2str(refMatrix.LongitudeLimits(1,1));
 maxlong = int2str(refMatrix.LongitudeLimits(1,2));
 
+% Coordinate limits
 LatLims = [refMatrix.LatitudeLimits(1,1),refMatrix.LatitudeLimits(1,2)];
 LongLims = [refMatrix.LongitudeLimits(1,1),refMatrix.LongitudeLimits(1,2)];
 
 % Calculate the reference ellipsoid
-    UTM = utmzone(LatLims,LongLims);
-    [ellip,ellipName] = utmgeoid(UTM);
-    e = referenceEllipsoid(ellipName);
-
+UTM = utmzone(LatLims,LongLims);
+[ellip,ellipName] = utmgeoid(UTM);
+e = referenceEllipsoid(ellipName);
+%DEMInfoT = toc
 end
