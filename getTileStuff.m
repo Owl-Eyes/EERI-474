@@ -16,23 +16,24 @@ function [tileData, e, refMat, lat_range, long_range] = getTileStuff(tileName)
 % Determine file extension
 lowerTile = lower(tileName);
 
-% try    
+% Check for file extension
+try    
     tileExtension = extractAfter(lowerTile,'.')
     tileNameOnly = extractBefore(tileName,'.');
-% catch    
-%     warning('No file extension found. Assume to be a WORLD file...');
-%     tileExtension = 'world'
-% end
+catch    
+     error('No file extension found.');
+end
 
 % Sort file formats
 if (strcmp(tileExtension,'tif') || strcmp(tileExtension,'tiff')) %GeoTiff files
     
-    [tileData, refMatp] = geotiffread(tileName); % get tile data and reference matix
+    [tileData, refMatp] = geotiffread(tileName);% get tile data and reference matix
     tileInfo = geotiffinfo(tileName);           % get tile metadata
     tileData = double(tileData);                % Convert data to doubles
     % Geographical objects
     refMat = georefcells(refMatp.LatitudeLimits,refMatp.LongitudeLimits,refMatp.RasterSize);
-    
+   
+    % Get coordinate ranges and ellipsoid
     [lat_range, long_range, e] = dispDEMInfo(refMat);
     
     % e = referenceEllipsoid(tileInfo.Ellipsoid);
@@ -49,8 +50,10 @@ elseif strcmp(tileExtension,'dem') % GTOPO30 files
     [tileData,refvec] = gtopo30(tileNameOnly); % Include lat and long lims in future
     rasterSize = size(tileData);
     refMat = refvecToGeoRasterReference(refvec,rasterSize);
-    [lat_range, long_range, e] = dispDEMInfo(refMat);  
     
+    % Get coordinate ranges and ellipsoid
+    [lat_range, long_range, e] = dispDEMInfo(refMat); 
+
     % Removed until appropriate data file obtained for testing
     
 % elseif strcmp(fileType,'wld') && ~strcmp(tileExtension,'')% WORLD file method    
@@ -74,9 +77,5 @@ elseif strcmp(tileExtension,'dem') % GTOPO30 files
 else
     errordlg('File not currently supported','File Error');
 end
-
-% Map objects
-% S = maprefcells(s.XIntrinsicLimits,s.YIntrinsicLimits,s.RasterSize); 
-
 
 end
