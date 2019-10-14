@@ -34,9 +34,13 @@ clear all % For memory freeing and repeatability analysis
 stepSize = 100; % Distance between samples (in meters)
 
 interpMethod = 'Linear';
-approxMethod = 'Haversine'; % Vincenty, Haversine, or Flat
+approxMethod = 'Vincenty'; % Vincenty, Haversine, or Flat
 fileType = 'tif';   % Currently unused
 
+% Show Plot: [DEM  Profile], true or false?, (y/n)
+plotChoice = [false false];
+
+parallel = false;   % True for on, false for off
 
 %% 'Main'
 
@@ -79,10 +83,16 @@ end
 %tic;  % Start total timer
 
 % Get profile data
+
+%NORMAL
+
 %[distData, elevData] = ...
-%               PEPE(tile_name,pointSet,stepSize,interpMethod,approxMethod);
+%               PEPE(tile_name,pointSet,stepSize,interpMethod,approxMethod,plotChoice,parallel);
+
+%DEMONSTRATION
 [distData, elevData] = ...
-    PEPE(tile_name,egPointSet,stepSize,interpMethod,approxMethod,deg);
+    PEPE(tile_name,egPointSet,stepSize,interpMethod,approxMethod,plotChoice,parallel,deg);
+
 
 % Plot results in a figure (optional)
 %plotProfile(distData, elevData, pointSet, deg);

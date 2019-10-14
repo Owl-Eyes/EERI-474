@@ -25,17 +25,20 @@
 %                'Nearest','Linear', or 'Cubic', case-insensitive
 % approxMethod - geograhic approximation method for modelling the planet
 %               'Flat','Haversine', or 'Vincenty', case-insensitive
-% fileType - the file extension of the data   ( CURRENTLY UNUSED )
-%            'tif','tiff', or 'ddf'
+% plotChoice - does the user want the DEM or path profiles to plot?
+%              boolean ([true false] <- [DEMPlot plotProfile]) 
+% parallel - does the user wish to use parallel processing?
+%            boolean (true or false)
+% deg - list of degrees form the demonstration program
+%       doubles
 
-function [r_dist, z_elev] = PEPE(filePath, pointSet, stepSize, interpMethod, approxMethod, deg)
+function [r_dist, z_elev] = ...
+PEPE(filePath, pointSet, stepSize, interpMethod, approxMethod, plotChoice, ...
+parallel, deg)
+
+%% Start-up Performance Timer
+
 tStart = tic;
-%% Start-up Performance Improvement
-
-% Likely parallel processing functions:
-
-% parpool(name, size, ...);
-% parfor(loopVar, ...) %For the different point set rows?
 
 %% Variable Declarations
 
@@ -63,6 +66,21 @@ lon = [];               % the profile longitude values
 % [tile_name, file_path] = getTileName();
 % file_location = strcat(file_path,tile_name);
 
+%% Check user preferences
+plotChoice1 = plotChoice(1,1);
+plotChoice2 = plotChoice(1,2);
+
+if (islogical(plotChoice1) + islogical(plotChoice2)) ~= 2
+    warning('Variable plotChoice was not Boolean or Logical. Plots will not be shown.');
+    plotChoice1 = 0
+    plotChoice2 = 0
+end
+
+if islogical(parallel) == 0
+    warning('Variable parallel not Boolean. Parallel processing Will be used.');
+    parallel = 1;
+end
+
 %% Get tile info and data
 tic;
 [tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath);
@@ -74,49 +92,56 @@ tic;
 TileStatsT = toc
 
 %% Plot tile in figure
- tic
-plotDEM(tile_data, ref_mat); % Optional
- plotDEMT = toc
 
- %% Find DEM information
-% tic;
-% [lat_range, long_range] = dispDEMInfo(ref_mat);
-% DEMInfoT = toc
-
-% Obtain bounded coordinates
-%[plat, plon] = getCoordinates(lat_range, long_range);
-
-% points      /```START```\/````END````\
-% pointSet = [-14.91 13.5 -14.93 13.48]; % Town
-
-% plat = [pointSet(:,1) pointSet(:,3)];
-% plon = [pointSet(:,2) pointSet(:,4)];
+if plotChoice1 == 1
+    
+    tic;
+    plotDEM(tile_data, ref_mat); % Optional
+    plotDEMT = toc
+    
+end
 
 %% Actual profile extraction
-tic
-[z_elev,r_dist] = extractProfile(tile_data,ellip,ref_mat,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
-ProfileT = toc
+
+if parallel == 1 
+    % Parallel Processing:
+    tic
+    [z_elev,r_dist] = extractProfileParallel(tile_data,ellip,ref_mat,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
+    ProfileT = toc
+else
+    % Normal:
+    tic
+    [z_elev,r_dist] = extractProfile(tile_data,ellip,ref_mat,pointSet,lat_range,long_range,stepSize,approxMethod,interpMethod);
+    ProfileT = toc
+end
+
 % Temporary function:
 %[z_elev,r_dist,lat,lon] = mapprofile(tile_data,ref_mat,plat,plon,'km',approxMethod,interpMethod);
 
 
 %% Plot path/elevation profile
 
-
-if nargin == 5
-    tic;
-    plotProfile(r_dist,z_elev, pointSet);
-    PlotProfileT = toc
-else
-    tic;
-    plotProfile(r_dist,z_elev, pointSet, deg);
-    PlotProfileT = toc
-end
+if plotChoice2 == 1
+  
+    if nargin == 7
+        tic;
+        plotProfile(r_dist,z_elev, pointSet);
+        PlotProfileT = toc
+    elseif nargin == 8
+        tic;
+        plotProfile(r_dist,z_elev, pointSet, deg);
+        PlotProfileT = toc
+    end
     
+end   
 
 %% Temp Tests
-% 
+% tic;
 % [begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet)
-% 
+% ltlnT = toc
+
+%% End Performance Timer
+
 TotalDuration = toc(tStart)
+
 end
