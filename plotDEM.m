@@ -17,19 +17,18 @@ figure  % New figure
 worldAxes = worldmap(tile,refMat);  % Lat/long axes
 hold on
 
-title('Texture Map of the Selected Region')          % Plot labels
+title('Texture Map of the Selected Region')    % Plot labels
 xlabel('Latitude')
 ylabel('Longitude')
 
-geoshow(tile,refMat,'DisplayType','surface');  % the DEM texturemap
+geoshow(tile,refMat,'DisplayType','surface');  % DEM texture map
 demcmap(tile);
-cbar = colorbar;
+
+cbar = colorbar; % Illustrates elevation
 title(cbar,'Height w.r.t. Sea Level (m)')
 
 daspectm('m',5)
- view(3)       % for 3D visualization
-% axis normal
-% tightmap
+view(3)       % for 3D visualization
 
 %plotDEMStart = tic;
 %axis off
