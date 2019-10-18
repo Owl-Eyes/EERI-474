@@ -84,12 +84,12 @@ end
 %% Get tile info and data
 tic;
 [tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath);
-TileStuffT = toc
+TileStuffT = toc;
 
 %% Get tile stats
 tic;
 [min_elev, max_elev] = getTileStats(tile_data);
-TileStatsT = toc
+TileStatsT = toc;
 
 %% Plot tile in figure
 
@@ -97,7 +97,7 @@ if plotChoice1 == 1
     
     tic;
     plotDEM(tile_data, ref_mat); % Optional
-    plotDEMT = toc
+    plotDEMT = toc;
     
 end
 
@@ -126,11 +126,11 @@ if plotChoice2 == 1
     if nargin == 7
         tic;
         plotProfile(r_dist,z_elev, pointSet);
-        PlotProfileT = toc
+        PlotProfileT = toc;
     elseif nargin == 8
         tic;
         plotProfile(r_dist,z_elev, pointSet, deg);
-        PlotProfileT = toc
+        PlotProfileT = toc;
     end
     
 end   
@@ -142,6 +142,6 @@ end
 
 %% End Performance Timer
 
-TotalDuration = toc(tStart)
+TotalDuration = toc(tStart);
 
 end

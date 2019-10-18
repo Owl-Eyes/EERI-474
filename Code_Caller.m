@@ -33,9 +33,9 @@ clear all % For memory freeing and repeatability analysis
 
 stepSize = 100; % Distance between samples (in meters)
 
-interpMethod = 'Linear';
+interpMethod = 'nearest';
 approxMethod = 'Vincenty'; % Vincenty, Haversine, or Flat
-fileType = 'tif';   % Currently unused
+%fileType = 'tif';   % Currently unused
 
 % Show Plot: [DEM  Profile], true or false?, (y/n)
 plotChoice = [false false];
@@ -61,10 +61,10 @@ parallel = false;   % True for on, false for off
 %                   RX?
 
 TXCoords = [-14.1 13.48];  % Latitude and longitude of Transmitter
-d = 2;           % Distance between Transmitter and Receiver (km)
+d = 10;           % Distance between Transmitter and Receiver (km)
 degStart = 0;    % Starting degree (0` is positive x-axis relative to a 2D Cartesian plane)
-degEnd = 180;    % Ending degree (anti-clockwise taken as positive, max 360`)
-deltaDeg = 60;   % Change in degrees, moving anticlockise from beginning point
+degEnd = 309.75;    % Ending degree (anti-clockwise taken as positive, max 360`)
+deltaDeg = 0.20;   % Change in degrees, moving anticlockise from beginning point
 
 [deg, RXCoords] = getRXCoords(TXCoords,d,degStart,degEnd,deltaDeg);
 
