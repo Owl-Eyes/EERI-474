@@ -32,8 +32,8 @@ for i = 1:numPlots
     zi_now = zi{1,i};
     
     % Current coordinates  
-    beginCoordvar = strcat(num2str(pointSet(i,1),3),',',num2str(pointSet(i,2),3));
-    endCoordvar = strcat(num2str(pointSet(i,3),3),',',num2str(pointSet(i,4),3));
+    beginCoordvar = strcat(num2str(pointSet(i,1),4),',',num2str(pointSet(i,2),4));
+    endCoordvar = strcat(num2str(pointSet(i,3),4),',',num2str(pointSet(i,4),4));
     coordvar = strcat('` (',beginCoordvar,'` to` ',endCoordvar,')');
     
     % Plot variables
@@ -56,15 +56,20 @@ for i = 1:numPlots
     titlevar = strcat(pathOrelev,' Profile ',titlevar2,numericalvar,coordvar);
 
     % Actual plot
-    figure
+    figure('Color','white')
     hold on
     title(titlevar)          % Plot labels
     xlabel(xlabelvar)
     ylabel(ylabelvar)
     pbaspect auto;
     plot(ri_now/1000,zi_now/1000,'Color',[0,0.7,0.9]); % to kms
-    %daspect([ 1 1/1000 1 ]); % Choose 1/1 for display without exaggeration
-
+    
+    %ax = axis;
+    %newAxMin = min(ax(3),0); % If y-axis min is positive, make it 0
+    %ylim([newAxMin inf]);
+    
+    %daspect([ 1 1/1000 1 ]); % Choose 1/1 for display without exaggeration  
+    
 end
 
 end

@@ -12,7 +12,7 @@
 
 function [] = plotDEM(tile, refMat)
 
-figure  % New figure
+figure('Color','white')  % New figure
 
 worldAxes = worldmap(tile,refMat);  % Lat/long axes
 hold on
