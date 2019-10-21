@@ -61,7 +61,8 @@ if (strcmp(approxMethod,'haversine') == 1)
         % FINAL DISTANCE ARRAY
         
         % Determine number of "legs" between points along path
-        nlegs = round(ms/stepSize); %improve round into fraction?
+        nlegs = floor(ms/stepSize); %improved round into fraction
+        dist_rem = rem(ms,stepSize);
         
         % Declare distance array
         r_dist = zeros(nlegs+1,1);
@@ -75,6 +76,8 @@ if (strcmp(approxMethod,'haversine') == 1)
             tempdist = tempdist + stepSize;
             
         end
+        %Replace last distance value with the last value + remainder
+        r_dist(nlegs+1,1) = r_dist(nlegs+1,1) + dist_rem;
           
         the_dist{i} = r_dist; % Array of distances (multiple pointset)
         
@@ -122,7 +125,8 @@ elseif (strcmp(approxMethod,'vincenty') == 1) % Ellipsoidal Elevation
         % FINAL VINCENTY DISTANCE ARRAY
         
         % Determine number of "legs" between points along path
-        nlegs = round(ms/stepSize); %improve round into fraction?
+        nlegs = floor(ms/stepSize); %improved round into fraction
+        dist_rem = rem(ms,stepSize);
         
         % Declare distance array
         r_dist = zeros(nlegs+1,1);
@@ -136,6 +140,8 @@ elseif (strcmp(approxMethod,'vincenty') == 1) % Ellipsoidal Elevation
             tempdist = tempdist + stepSize;
             
         end
+        %Replace last distance value with the last value + remainder
+        r_dist(nlegs+1,1) = r_dist(nlegs+1,1) + dist_rem;
           
         the_dist{i} = r_dist; % Array of distances (multiple pointset)
         
@@ -156,18 +162,13 @@ elseif (strcmp(approxMethod,'vincenty') == 1) % Ellipsoidal Elevation
     end
     
                           
-%% Flat
+%% Flat Earth
 
 elseif (strcmp(approxMethod,'flat') == 1)
-            
+    
     disp('Flat Earth Geographical Approximation Method \n');
-    
-    % Convert reference matrix to map equivalent
-    R = maprasterref('RasterSize', ref_mat.RasterSize, ...
-          'YWorldLimits', ref_mat.YIntrinsicLimits, 'ColumnsStartFrom',...
-          ref_mat.ColumnsStartFrom,'XWorldLimits', ref_mat.XIntrinsicLimits);
-    
-    UTM = utmzone(lat_range,long_range);
+      
+    UTM = utmzone(mean(latRange,'omitnan'),mean(longRange,'omitnan'));
     utmstruct = defaultm('utm');
     utmstruct.zone = UTM;
     utmstruct.geoid = e;
@@ -190,14 +191,6 @@ elseif (strcmp(approxMethod,'flat') == 1)
     
         % Distance
 
-%         % Latitude degrees to radians
-%         phi1 = deg2rad(beginlat(i)); 
-%         phi2 = deg2rad(endlat(i));
-% 
-%         % Longitudes
-%         lam1 = beginlon(i);
-%         lam2 = endlon(i);
-
         x = currentEndPair(1,1) - currentBeginPair(1,1);  % Change in x
         y = currentEndPair(1,2) - currentBeginPair(1,2);  % Change in y
         ms = sqrt((x)^2 + (y)^2);  % Distance
@@ -206,7 +199,8 @@ elseif (strcmp(approxMethod,'flat') == 1)
         % FINAL FLAT DISTANCE ARRAY
         
         % Determine number of "legs" between points along path
-        nlegs = round(ms/stepSize); %improve round into fraction?
+        nlegs = floor(ms/stepSize); %improved round into fraction
+        dist_rem = rem(ms,stepSize);
         
         % Declare distance array
         r_dist = zeros(nlegs+1,1);
@@ -220,25 +214,22 @@ elseif (strcmp(approxMethod,'flat') == 1)
             tempdist = tempdist + stepSize;
             
         end
-          
+        
+        %Replace last distance value with the last value + remainder
+        r_dist(nlegs+1,1) = r_dist(nlegs+1,1) + dist_rem;
+        
         the_dist{i} = r_dist; % Array of distances (multiple pointset)
 
         % Get Elevations
-        %disp('Flat Earth Geographical Elevation Method \n');
 
         % Determine equation of line between points ( y = mx + c )
-%         fx = [Xi(i) Xj(i)];
-%         fy = [Yi(i) Yj(i)];
-%         fv = [[1; 1]  fx(:)]\fy(:);  % Calculate parameter vector
-%         grad_m = fv(2); % Gradient m
-%         int_c = fv(1);  % Intercept c
         
-          fv = polyfit([Xi(i), Xj(i)], [Yi(i), Yj(i)], 1);
-          grad_m = fv(2); % Gradient m
-          int_c = fv(1);  % Intercept c
-          
-          % Trigonometry for straight line vs xy-axes
-          
+        fv = polyfit([Xi(i), Xj(i)], [Yi(i), Yj(i)], 1);
+        grad_m = fv(2); % Gradient m
+        int_c = fv(1);  % Intercept c
+
+%    Trigonometry for straight line vs xy-axes
+%          
 %                    /|?`B
 %                  /  |
 %             hyp/    |o
@@ -246,32 +237,34 @@ elseif (strcmp(approxMethod,'flat') == 1)
 %          A /_?`____|| 90`C
 %                 a
           
-          hyp = tempdist;   % Hypotenuse
-          a = x;            % Adjacent side
-          o = y;            % Opposite side
-          A = acosd((hyp^2 + a^2 - o^2)/(2*hyp*a)); %Unknown angle A
-          B = 90 - A;       % Unknown angle B (180` = 90` - A` // triangle)
-          
-          deltaX = stepSize*sind(B);    % Law of Sines
-          
-          tempX = Xi(i);    % Initial x value
+        hyp = tempdist;   % Hypotenuse
+        a = x;            % Adjacent side
+        o = y;            % Opposite side
+        A = acosd((hyp^2 + a^2 - o^2)/(2*hyp*a)); %Unknown angle A
+        B = 90 - A;       % Unknown angle B (180` = 90` - A` // triangle)
+        
+        deltaX = stepSize*sind(B);    % Law of Sines
+
+        tempX = Xi(i);    % Initial x value
           
         for ptLoop = 1:nlegs+1
-            tempX = tempX + deltaX   % x = adjacent distance at sample
-            %tempY = grad_m*tempX + int_c; % y = mx + c
+            tempX = tempX + deltaX;   % x = adjacent distance at sample
             tempY = polyval(fv,tempX);
             tempPt = [tempX, tempY];      % waypoint (x, y)
             
             pts(ptLoop,1) = tempPt(1,1);         % save waypoints in array
             pts(ptLoop,2) = tempPt(1,2);         % save waypoints in array
         end
+        
+        %Back to lat/long
+        [ptlat,ptlon] = minvtran(utmstruct,pts(:,1),pts(:,2));
 
-        z_elev = mapinterp(tile_data, R, pts(:,1), pts(:,2), interpMethod);
-
+        z_elev = geointerp(tile_data, ref_mat, ptlat(:), ptlon(:), interpMethod);
+        
         % FINAL FLAT ELEVATION ARRAY 
         
-        the_elev{i} = z_elev;    % Array of distances (multiple pointset)
-        
+         the_elev{i} = z_elev;    % Array of distances (multiple pointset)
+         
     end
     
 %% Invalid Method
