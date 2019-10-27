@@ -10,11 +10,18 @@
 % IN: DEM data matrix, reference matrix
 % OUT: void (simply plots the geographical image)
 
-function [] = plotDEM(tile, refMat)
+function [] = plotDEM(tile, refMat, fileType)
 
 figure('Color','white')  % New figure
 
 worldAxes = worldmap(tile,refMat);  % Lat/long axes
+
+% Orientation    
+if strcmp(fileType,'tif')
+    set(gca,'YDir','reverse');
+end  
+
+
 hold on
 
 title('Texture Map of the Selected Region')    % Plot labels
