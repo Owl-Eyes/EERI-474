@@ -1,3 +1,41 @@
+%% Vincenty Data
+
+i1fn = [0.0383 0.0364 0.0354 0.0380 0.0346];
+i1fl = [0.0345 0.0360 0.0405 0.0379 0.0347];
+i1fc = [0.0379 0.0347 0.0384 0.0395 0.0378];
+
+i10fn = [0.1011 0.0933 0.0963 0.0949 0.0910];
+i10fl = [0.0967 0.0916 0.0958 0.1029 0.0940];
+i10fc = [0.0961 0.0920 0.1034 0.1015 0.0932];
+
+i50fn = [0.1305 0.1195 0.1164 0.1203  0.1190];
+i50fl = [0.1311 0.1189 0.1246 0.1186 0.1183];
+i50fc = [0.1200 0.1198 0.1193 0.1180 0.1191];
+
+i100fn = [0.1633 0.1622 0.1820 0.1688 0.1625];
+i100fl = [0.1649 0.1830 0.1739 0.1711 0.1751];
+i100fc = [0.1673 0.1662 0.1670 0.1662 0.1864];
+
+i200fn = [0.2659 0.3052 0.2554 0.2682 0.2599];
+i200fl = [0.2559 0.2568 0.3211 0.2971 0.2612];
+i200fc = [0.2705 0.2578 0.2674 0.2721 0.2596];
+
+i500fn = [0.5260 0.5092 0.5628 0.5605 0.5376];
+i500fl = [0.5248 0.5497 0.5393 0.5192 0.5220];
+i500fc = [0.6078 0.5327 0.6086 0.5558 0.5822];
+
+i750fn = [0.7995 0.7988 0.7801 0.7626 0.7642];
+i750fl = [0.7443 0.8098 0.8545 0.7418 0.8015];
+i750fc = [0.7557 0.7893 0.8241 0.8188 0.8199];
+
+i1000fn = [0.9390 0.9686 0.9727 0.9399 0.9949];
+i1000fl = [1.0786 1.0527 0.9962 1.0008 1.0709];
+i1000fc = [1.0024 1.0395 1.0234 1.0527 1.0261];
+
+i1550fn = [1.4369 1.4273 1.4998 1.5525 1.5656];
+i1550fl = [1.5341 1.4681 1.5510 1.4820 1.5225];
+i1550fc = [1.5368 1.4988 1.4789 1.6714 1.5278];
+
 %% Haversine Data
 
 i1gn = [0.1092 0.1067 0.0916	0.0965 0.0901 0.9227 0.9004 0.9921 0.8740 0.8970];
@@ -75,6 +113,38 @@ i1550vl = [2.4349	2.4843	2.5397	2.5149	2.4890	2.5481	2.6099	2.5859	2.4979	2.5002
 i1550vc = [2.5890	2.5325	2.5688	2.6835	2.5717	2.6984	2.6692	2.6641	2.5750	2.5633];
 
 %% Find means
+
+% Flat Earth
+
+m1fn = mean(i1fn(1:5));
+m10fn = mean(i10fn(1:5));
+m50fn = mean(i50fn(1:5));
+m100fn = mean(i100fn(1:5));
+m200fn = mean(i200fn(1:5));
+m500fn = mean(i500fn(1:5));
+m750fn = mean(i750fn(1:5));
+m1000fn = mean(i1000fn(1:5));
+m1550fn = mean(i1550fn(1:5));
+
+m1fl = mean(i1fl(1:5));
+m10fl = mean(i10fl(1:5));
+m50fl = mean(i50fl(1:5));
+m100fl = mean(i100fl(1:5));
+m200fl = mean(i200fl(1:5));
+m500fl = mean(i500fl(1:5));
+m750fl = mean(i750fl(1:5));
+m1000fl = mean(i1000fl(1:5));
+m1550fl = mean(i1550fl(1:5));
+
+m1fc = mean(i1fc(1:5));
+m10fc = mean(i10fc(1:5));
+m50fc = mean(i50fc(1:5));
+m100fc = mean(i100fc(1:5));
+m200fc = mean(i200fc(1:5));
+m500fc = mean(i500fc(1:5));
+m750fc = mean(i750fc(1:5));
+m1000fc = mean(i1000fc(1:5));
+m1550fc = mean(i1550fc(1:5));
 
 % Haversine
 
@@ -213,6 +283,10 @@ xvals = [1 10 50 100 200 500 750 1000 1550];
 xvalsx = [1 10 50 100 200 500 750 1000 1550 1750 2000 2500];
 x = {'1' ,'10', '50' ,'100', '200', '500', '750', '1000', '1550'};
 
+fnvals = [m1fn m1fl m1fc;m10fn m10fl m10fc;m50fn m50fl m50fc; ...
+        m100fn m100fl m100fc;m200fn m200fl m200fc;m500fn m500fl m500fc;...
+        m750fn m750fl m750fc;m1000fn m1000fl m1000fc;m1550fn m1550fl m1550fc];
+
 gnvals = [m1gn m1gl m1gc;m10gn m10gl m10gc;m50gn m50gl m50gc; ...
         m100gn m100gl m100gc;m200gn m200gl m200gc;m500gn m500gl m500gc;...
         m750gn m750gl m750gc;m1000gn m1000gl m1000gc;m1550gn m1550gl m1550gc];
@@ -233,107 +307,128 @@ ygn = gnvals(:,3).';
 ygp = gpvals(:,3).';
 yvn = vnvals(:,3).';
 yvp = vpvals(:,3).';
+yfn = fnvals(:,3).';
 
 %Interpolation
 
+ffn = polyfit(xvals,yfn,2);
 fgn = polyfit(xvals,ygn,2);
 fgp = polyfit(xvals,ygp,2);    
 fvn = polyfit(xvals,yvn,2);
 fvp = polyfit(xvals,yvp,2);
 
+yffn = polyval(ffn,xvalsx);
 yfgn = polyval(fgn,xvalsx);
 yfgp = polyval(fgp,xvalsx);
 yfvn = polyval(fvn,xvalsx);
 yfvp = polyval(fvp,xvalsx);
 
-% % Haversine Normal
-% 
-% figure('Color','white');    
-% b = bar(gnvals,'FaceColor','flat');
-% grid on
-% 
-% % Labels
-% set(gca,'xticklabel',x);
-% xlabel('Number of Pairs');
-% ylabel('Profile Extraction Time (s)');
-% title('Haversine Method Profile Extraction Time');
-% legend({'Nearest Neighbour','Linear','Cubic'},'Location','northwest')
-% 
-% %Colours
-% b(1).FaceColor = [0 0.4470 0.7410];
-% b(2).FaceColor = [0.3010 0.7450 0.9330];
-% b(3).FaceColor = [.1 .6 .6];
-% 
-% % Haversine Parallel
-% 
-% figure('Color','white');    
-% b = bar(gpvals,'FaceColor','flat');
-% grid on
-% 
-% % Labels
-% set(gca,'xticklabel',x);
-% xlabel('Number of Pairs');
-% ylabel('Profile Extraction Time (s)');
-% title('Parallelized Haversine Method Profile Extraction Time');
-% legend({'Nearest Neighbour','Linear','Cubic'},'Location','northwest')
-% 
-% %Colours
-% b(1).FaceColor = [0 0.4470 0.7410];
-% b(2).FaceColor = [0.3010 0.7450 0.9330];
-% b(3).FaceColor = [.1 .6 .6];
-% 
-% % Vincenty Normal
-% figure('Color','white');    
-% bv = bar(vnvals,'FaceColor','flat');
-% grid on
-% 
-% % Labels
-% set(gca,'xticklabel',x);
-% xlabel('Number of Pairs');
-% ylabel('Profile Extraction Time (s)');
-% title('Vincenty Method Profile Extraction Time');
-% legend({'Nearest Neighbour','Linear','Cubic'},'Location','northwest')
-% 
-% %Colours
-% bv(1).FaceColor = [0 0.4470 0.7410];
-% bv(2).FaceColor = [0.3010 0.7450 0.9330];
-% bv(3).FaceColor = [.1 .6 .6];
-% 
-% 
-% % Vincenty Parallel
-% figure('Color','white');    
-% bv = bar(vpvals,'FaceColor','flat');
-% grid on
-% 
-% % Labels
-% set(gca,'xticklabel',x);
-% xlabel('Number of Pairs');
-% ylabel('Profile Extraction Time (s)');
-% title('Parallelized Vincenty Method Profile Extraction Time');
-% legend({'Nearest Neighbour','Linear','Cubic'},'Location','northwest')
-% 
-% %Colours
-% bv(1).FaceColor = [0 0.4470 0.7410];
-% bv(2).FaceColor = [0.3010 0.7450 0.9330];
-% bv(3).FaceColor = [.1 .6 .6];
 
+% Haversine Normal
+
+figure('Color','white');    
+b = bar(gnvals,'FaceColor','flat');
+grid on
+
+% Labels
+set(gca,'xticklabel',x);
+xlabel('Number of Pairs');
+ylabel('Profile Extraction Time (s)');
+title('Haversine Method Profile Extraction Time');
+legend({'Nearest Neighbour','Linear','Cubic'},'Location','northwest')
+
+%Colours
+b(1).FaceColor = [0 0.4470 0.7410];
+b(2).FaceColor = [0.3010 0.7450 0.9330];
+b(3).FaceColor = [.1 .6 .6];
+
+% Haversine Parallel
+
+figure('Color','white');    
+b = bar(gpvals,'FaceColor','flat');
+grid on
+
+% Labels
+set(gca,'xticklabel',x);
+xlabel('Number of Pairs');
+ylabel('Profile Extraction Time (s)');
+title('Parallelized Haversine Method Profile Extraction Time');
+legend({'Nearest Neighbour','Linear','Cubic'},'Location','northwest')
+
+%Colours
+b(1).FaceColor = [0 0.4470 0.7410];
+b(2).FaceColor = [0.3010 0.7450 0.9330];
+b(3).FaceColor = [.1 .6 .6];
+
+% Vincenty Normal
+figure('Color','white');    
+bv = bar(vnvals,'FaceColor','flat');
+grid on
+
+% Labels
+set(gca,'xticklabel',x);
+xlabel('Number of Pairs');
+ylabel('Profile Extraction Time (s)');
+title('Vincenty Method Profile Extraction Time');
+legend({'Nearest Neighbour','Linear','Cubic'},'Location','northwest')
+
+%Colours
+bv(1).FaceColor = [0 0.4470 0.7410];
+bv(2).FaceColor = [0.3010 0.7450 0.9330];
+bv(3).FaceColor = [.1 .6 .6];
+
+
+% Vincenty Parallel
+figure('Color','white');    
+bv = bar(vpvals,'FaceColor','flat');
+grid on
+
+% Labels
+set(gca,'xticklabel',x);
+xlabel('Number of Pairs');
+ylabel('Profile Extraction Time (s)');
+title('Parallelized Vincenty Method Profile Extraction Time');
+legend({'Nearest Neighbour','Linear','Cubic'},'Location','northwest')
+
+%Colours
+bv(1).FaceColor = [0 0.4470 0.7410];
+bv(2).FaceColor = [0.3010 0.7450 0.9330];
+bv(3).FaceColor = [.1 .6 .6];
+
+% Flat Normal
+ figure('Color','white');    
+ bv = bar(fnvals,'FaceColor','flat');
+ grid on
+ 
+ % Labels
+ set(gca,'xticklabel',x);
+ xlabel('Number of Pairs');
+ ylabel('Profile Extraction Time (s)');
+ title('Flat Earth Method Profile Extraction Time');
+ legend({'Nearest Neighbour','Linear','Cubic'},'Location','northwest')
+ 
+ %Colours
+ bv(1).FaceColor = [0 0.4470 0.7410];
+ bv(2).FaceColor = [0.3010 0.7450 0.9330];
+ bv(3).FaceColor = [.1 .6 .6];
 
 %% Line Charts (parallel)
 
 figure('Color','white');
 
-p = plot(xvalsx, yfgn, xvalsx, yfgp, xvalsx, yfvn, xvalsx, yfvp, 'LineWidth', 2);
+p = plot(xvalsx, yffn, xvalsx, yfgn, xvalsx, yfgp, xvalsx, yfvn, xvalsx, yfvp, 'LineWidth', 2);
 grid on
 
-set(p(1), 'color', [.7 0.5 0.9]);
-set(p(2), 'color', [1 0.5 0.7]);
-set(p(3), 'color', [0.1 0.8 0.9]); 
-set(p(4), 'color', [0.2 0.8 0.7]);
+set(p(1), 'color', [.5 0.6 0.6], 'LineWidth', 3);
+set(p(2), 'color', [.7 0.5 0.9], 'LineStyle', ':');
+set(p(3), 'color', [1 0.5 0.7], 'LineStyle', '--');
+set(p(4), 'color', [0.1 0.8 0.9], 'LineStyle', '-.'); 
+set(p(5), 'color', [0.2 0.8 0.7], 'LineStyle', '-');
 
 xlabel('Number of Pairs');
 ylabel('Profile Extraction Time (s)');
 title('Comparison of Profile Extraction Times');
-legend({'Haversine','Parallel Haversine','Vincenty','Parallel Vincenty'},...
+legend({'Flat Earth','Haversine','Parallel Haversine','Vincenty','Parallel Vincenty'},...
        'Location','northwest');
 
 
