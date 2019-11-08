@@ -15,30 +15,24 @@ clear all % For memory freeing and repeatability analysis
 %% Vars
 
  tile_name = 's15_e013_1arc_v3.tif'; % Lubango, Huila
-% tile_name = 'W020S10.dem'; % Western SA + Namibia + S. Angola
-%tileName = '9129CATD.ddf';
+% tile_name = 'W020S10.dem'; % Western ZA + Namibia + S. Angola
+% tile_name = '9129CATD.ddf';
+% tile_name = 'S26E019.hgt'; % SRTM, ZA
 
-
-% plon = [13 13.25 13.5 13.75 14]; % Across
-% plat = [-15 -14.75 -14.5 -14.25 -14];
-
-% points   /```START```\/````END````\ 
-%pointSet = [-14.91 13.5 -14.93 13.48]; % Town
-%          \ lat  long / \ lat long /
-
+% pointSet = [-26.5 19.5 -26.6 19.6]; % SRTM points
+ 
 % points      /```START```\/````END````\
- pointSet =   [-14.91 13.5 -14.93 13.48 %]   % Town
+ pointSet =   [-14.92 13.5 -14.93 13.49    % Town
                -14.25 13.25 -14.75 13.75]; % DiagoNal section
 %             \ lat  long / \ lat long /
 
 stepSize = 100; % Distance between samples (in meters)
 
-interpMethod = 'nearest';
+interpMethod = 'cubic';
 approxMethod = 'Vincenty'; % Vincenty, Haversine, or Flat
-%fileType = 'tif';   % Currently unused
 
 % Show Plot: [DEM  Profile], true or false?, (y/n)
-plotChoice = [false false];
+plotChoice = [true true];
 
 parallel = false;   % True for on, false for off
 
@@ -61,10 +55,10 @@ parallel = false;   % True for on, false for off
 %                   RX?
 
 TXCoords = [-14.1 13.48];  % Latitude and longitude of Transmitter
-d = 10;           % Distance between Transmitter and Receiver (km)
-degStart = 0;    % Starting degree (0` is positive x-axis relative to a 2D Cartesian plane)
-degEnd = 309.75;    % Ending degree (anti-clockwise taken as positive, max 360`)
-deltaDeg = 0.20;   % Change in degrees, moving anticlockise from beginning point
+d = 2;         % Distance between Transmitter and Receiver (km)
+degStart = 30;   % Starting degree (0` is positive x-axis relative to a 2D Cartesian plane)
+degEnd = 90;    % Ending degree (anti-clockwise taken as positive, max 360`)
+deltaDeg = 30;  % Change in degrees, moving anticlockise from beginning point
 
 [deg, RXCoords] = getRXCoords(TXCoords,d,degStart,degEnd,deltaDeg);
 
@@ -82,17 +76,19 @@ end
 %% PEPE Call
 %tic;  % Start total timer
 
-% Get profile data
+% Get profile data %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %NORMAL
 
 %[distData, elevData] = ...
-%               PEPE(tile_name,pointSet,stepSize,interpMethod,approxMethod,plotChoice,parallel);
+%PEPE(tile_name,pointSet,stepSize,interpMethod,approxMethod,plotChoice,parallel);
 
 %DEMONSTRATION
-[distData, elevData] = ...
-    PEPE(tile_name,egPointSet,stepSize,interpMethod,approxMethod,plotChoice,parallel,deg);
 
+[distData, elevData] = ...
+PEPE(tile_name,egPointSet,stepSize,interpMethod,approxMethod,plotChoice,parallel,deg);
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Plot results in a figure (optional)
 %plotProfile(distData, elevData, pointSet, deg);
