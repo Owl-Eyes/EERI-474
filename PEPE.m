@@ -83,7 +83,7 @@ end
 
 %% Get tile info and data
 tic;
-[tile_data, ellip, ref_mat, lat_range, long_range] = getTileStuff(filePath);
+[tile_data, ellip, ref_mat, lat_range, long_range, fileType] = getTileStuff(filePath);
 TileStuffT = toc;
 
 %% Get tile stats
@@ -96,7 +96,7 @@ TileStatsT = toc;
 if plotChoice1 == 1
     
     tic;
-    plotDEM(tile_data, ref_mat); % Optional
+    plotDEM(tile_data, ref_mat, fileType); % Optional
     plotDEMT = toc;
     
 end
@@ -136,9 +136,13 @@ if plotChoice2 == 1
 end   
 
 %% Temp Tests
-% tic;
-% [begindex, endex] = ltln2ind(tile_data,ref_mat,pointSet)
-% ltlnT = toc
+% 
+% lat1 = pointSet(1,1);
+% lat2 = pointSet(1,3);
+% lon1 = pointSet(1,2);
+% lon2 = pointSet(1,4);
+% 
+% los2(tile_data,ref_mat,lat1,lon1,lat2,lon2)
 
 %% End Performance Timer
 
