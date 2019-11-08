@@ -11,27 +11,31 @@
 % cases such as world files
 % OUT: the dem data, metadata, reference matrix, and coordinate ranges
 
-function [tileData, e, refMat, lat_range, long_range] = getTileStuff(tileName)
+function [tileData, e, refMat, lat_range, long_range, fileType] = ...
+         getTileStuff(tileName)
 
 % Determine file extension
 lowerTile = lower(tileName);
 
 % Check for file extension
 try    
-    tileExtension = extractAfter(lowerTile,'.')
+    tileExtension = extractAfter(lowerTile,'.');
     tileNameOnly = extractBefore(tileName,'.');
 catch    
      error('No file extension found.');
 end
 
 % Sort file formats
-if (strcmp(tileExtension,'tif') || strcmp(tileExtension,'tiff')) %GeoTiff files
+% GeoTiff files
+if (strcmp(tileExtension,'tif') || strcmp(tileExtension,'tiff')) 
     
-    [tileData, refMatp] = geotiffread(tileName);% get tile data and reference matix
+    [tileData, refMatp] = geotiffread(tileName);% get tile data and ref.
     tileInfo = geotiffinfo(tileName);           % get tile metadata
     tileData = double(tileData);                % Convert data to doubles
+    fileType = 'tif';
     % Geographical objects
-    refMat = georefcells(refMatp.LatitudeLimits,refMatp.LongitudeLimits,refMatp.RasterSize);
+    refMat = georefcells(refMatp.LatitudeLimits,...
+             refMatp.LongitudeLimits,refMatp.RasterSize);
    
     % Get coordinate ranges and ellipsoid
     [lat_range, long_range, e] = dispDEMInfo(refMat);
@@ -50,10 +54,25 @@ elseif strcmp(tileExtension,'dem') % GTOPO30 files
     [tileData,refvec] = gtopo30(tileNameOnly); % Include lat and long lims in future
     rasterSize = size(tileData);
     refMat = refvecToGeoRasterReference(refvec,rasterSize);
+    fileType = 'dem';
     
     % Get coordinate ranges and ellipsoid
     [lat_range, long_range, e] = dispDEMInfo(refMat); 
 
+elseif strcmp(tileExtension,'hgt') % SRTM files
+    
+    %Temporarily assign standard scale
+    srtm_scale = 1201;
+    
+    [tileData,refvec] = srtmread_mod(tileName,tileNameOnly,srtm_scale);
+    tileData = double(tileData);
+    rasterSize = size(tileData);
+    refMat = refvecToGeoRasterReference(refvec,rasterSize);
+    fileType = 'hgt';
+    
+    % Get coordinate ranges and ellipsoid
+    [lat_range, long_range, e] = dispDEMInfo(refMat);
+    
     % Removed until appropriate data file obtained for testing
     
 % elseif strcmp(fileType,'wld') && ~strcmp(tileExtension,'')% WORLD file method    

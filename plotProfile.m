@@ -62,7 +62,7 @@ for i = 1:numPlots
     xlabel(xlabelvar)
     ylabel(ylabelvar)
     pbaspect auto;
-    plot(ri_now/1000,zi_now/1000,'Color',[0,0.7,0.9]); % to kms
+    plot(ri_now/1000,zi_now/1000,'Color',[0.3,0,0.4],'LineWidth',1.5); % to kms
     
     %ax = axis;
     %newAxMin = min(ax(3),0); % If y-axis min is positive, make it 0
