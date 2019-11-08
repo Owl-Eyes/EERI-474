@@ -224,10 +224,16 @@ elseif (strcmp(approxMethod,'flat') == 1)
 
         % Determine equation of line between points ( y = mx + c )
         
-        fv = polyfit([Xi(i), Xj(i)], [Yi(i), Yj(i)], 1);
-        grad_m = fv(2); % Gradient m
-        int_c = fv(1);  % Intercept c
+%         fv = polyfit([Xi(i), Xj(i)], [Yi(i), Yj(i)], 1);
+%         grad_m = fv(2); % Gradient m
+%         int_c = fv(1);  % Intercept c
 
+          fx = [Xi(i) Xj(i)];
+          fy = [Yi(i) Yj(i)];
+          fv = [[1; 1]  fx(:)]\fy(:);  % Calculate parameter vector
+          grad_m = fv(2); % Gradient m
+          int_c = fv(1);  % Intercept c
+          
 %    Trigonometry for straight line vs xy-axes
 %          
 %                    /|?`B
@@ -249,7 +255,8 @@ elseif (strcmp(approxMethod,'flat') == 1)
           
         for ptLoop = 1:nlegs+1
             tempX = tempX + deltaX;   % x = adjacent distance at sample
-            tempY = polyval(fv,tempX);
+            %tempY = polyval(fv,tempX);
+            tempY = grad_m*tempX + int_c; % y = mx + c
             tempPt = [tempX, tempY];      % waypoint (x, y)
             
             pts(ptLoop,1) = tempPt(1,1);         % save waypoints in array
@@ -271,7 +278,7 @@ elseif (strcmp(approxMethod,'flat') == 1)
 
 else    % Not Haversine, Vincenty, or Flat
     
-    ('Invalid Geographical Approximation Method');
+    disp('Invalid Geographical Approximation Method');
     
 end
 TForLoop = toc  
