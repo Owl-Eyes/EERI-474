@@ -90,6 +90,11 @@ PEPE(tile_name,egPointSet,stepSize,interpMethod,approxMethod,plotChoice,parallel
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Save Profile Data
+
+save('profile.mat','distData','elevData');
+
+
 % Plot results in a figure (optional)
 %plotProfile(distData, elevData, pointSet, deg);
 
